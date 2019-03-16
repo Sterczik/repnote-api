@@ -16,7 +16,7 @@ module.exports = {
   | Function - Receives the current origin and should return one of the above values.
   |
   */
-  origin: ['http://localhost:8080', 'https://localhost:8080'],
+  origin: ['*'],
 
   /*
   |--------------------------------------------------------------------------
@@ -29,7 +29,7 @@ module.exports = {
   | Array - An array of allowed methods
   |
   */
-  methods: ['GET', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
 
   /*
   |--------------------------------------------------------------------------

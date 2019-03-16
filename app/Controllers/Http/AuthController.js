@@ -4,7 +4,7 @@ const User = use('App/Models/User')
 
 class AuthController {
 
-  async handleProviderCallback ({request, params, ally, auth, response}) {
+  async socialLoginCallback ({request, params, ally, auth, response}) {
     try {
       const provider = params.provider
       const bodyResponse = request.raw()
@@ -21,7 +21,7 @@ class AuthController {
         const userToken = await auth.generate(authUser)
         return response.status(200)
           .json({
-            googleUserToken: userData.getAccessToken(),
+            userToken: userData.getAccessToken(),
             user: {
               id: authUser.id,
               token: userToken
@@ -44,7 +44,7 @@ class AuthController {
 
       return response.status(200)
         .json({
-          googleUserToken: userData.getAccessToken(),
+          userToken: userData.getAccessToken(),
           user: {
             id: user.id,
             token: userToken

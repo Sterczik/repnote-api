@@ -16,6 +16,6 @@
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route')
 
-Route.post('/api/authenticated/:provider', 'AuthController.handleProviderCallback')
+Route.post('/api/authenticated/:provider', 'AuthController.socialLoginCallback')
 
 // Route.any('*', ({ view }) => view.render('main'))
