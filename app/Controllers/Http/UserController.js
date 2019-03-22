@@ -3,6 +3,7 @@
 const HTTPStatus = require('http-status')
 const User = use('App/Models/User')
 const Hash = use('Hash')
+const Mail = use('Mail')
 const { validate } = use('Validator')
 
 class UserController {
@@ -24,7 +25,7 @@ class UserController {
 
       const validation = await validate(request.only(['name', 'email', 'password', 'password_confirmation']), {
         email: 'required|email|unique:users',
-        name: 'required|min:3|max:30',
+        name: 'required|min:3|max:30|unique:users',
         password: 'required|confirmed|min:6|max:30'
       })
       //|regex:/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/
@@ -40,6 +41,13 @@ class UserController {
 
       const user = await User.create(data)
       await user.save()
+
+      // await Mail.send('emails.welcome', user.toJSON(), (message) => {
+      //   message
+      //     .from('hello@sterczik.io')
+      //     .to(user.email)
+      //     .subject('Hello ✔')
+      // })
 
       return response.status(HTTPStatus.CREATED)
         .json({
