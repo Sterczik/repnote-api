@@ -19,6 +19,24 @@ class User extends Model {
         userInstance.password = await Hash.make(userInstance.password)
       }
     })
+
+    this.addTrait('@provider:Lucid/Slugify', {
+      fields: {
+        slug: 'name'
+      },
+      strategy: 'dbIncrement'
+    })
+  }
+
+  static get hidden () {
+    return ['password', 'created_at', 'updated_at']
+  }
+
+  static formatDates (field, value) {
+    if (field === 'dob') {
+      return value.format('DD-MM-YYYY')
+    }
+    return super.formatDates(field, value)
   }
 
   /**
