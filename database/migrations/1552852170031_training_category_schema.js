@@ -7,6 +7,7 @@ class TrainingCategorySchema extends Schema {
   up () {
     this.create('training_categories', (table) => {
       table.increments()
+      table.string('name')
       table.timestamps()
     })
   }
