@@ -39,8 +39,7 @@ class UserController {
         })
       }
 
-      const user = await User.create(data)
-      await user.save()
+      await User.create(data)
 
       // await Mail.send('emails.welcome', user.toJSON(), (message) => {
       //   message
