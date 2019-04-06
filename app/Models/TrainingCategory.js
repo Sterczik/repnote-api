@@ -4,8 +4,12 @@
 const Model = use('Model')
 
 class TrainingCategory extends Model {
+  static get hidden () {
+    return ['created_at', 'updated_at']
+  }
+
   trainings () {
-    return this.hasMany('App/Models/Training')
+    return this.hasMany('App/Models/Training', 'id', 'category_id')
   }
 }
 

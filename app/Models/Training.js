@@ -12,13 +12,13 @@ class Training extends Model {
   }
 
   user () {
-    return this.belongsTo('App/Models/User')
+    return this.belongsTo('App/Models/User', 'user_id', 'id')
   }
   category () {
-    return this.belongsTo('App/Models/TrainingCategory')
+    return this.belongsTo('App/Models/TrainingCategory', 'category_id', 'id')
   }
   exercises () {
-    return this.hasMany('App/Models/Exercise')
+    return this.hasMany('App/Models/Exercise', 'id', 'training_id')
   }
 }
 

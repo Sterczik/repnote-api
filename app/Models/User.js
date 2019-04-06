@@ -53,7 +53,7 @@ class User extends Model {
     return this.hasMany('App/Models/Token')
   }
   trainings () {
-    return this.hasMany('App/Models/Training')
+    return this.hasMany('App/Models/Training', 'id', 'user_id')
   }
 }
 
