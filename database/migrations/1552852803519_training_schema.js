@@ -9,6 +9,8 @@ class TrainingSchema extends Schema {
       table.increments()
       table.string('name')
       table.boolean('private').defaultTo(false)
+      table.string('description')
+      table.string('goal')
       table.integer('user_id').unsigned().references('id').inTable('users')
       table.integer('category_id').unsigned().references('id').inTable('training_categories')
       table.timestamps()
