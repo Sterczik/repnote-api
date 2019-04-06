@@ -9,7 +9,7 @@ class RoundSchema extends Schema {
       table.increments()
       table.integer('reps')
       table.integer('weight')
-      table.integer('exercise_id').unsigned().references('id').inTable('exercises')
+      table.integer('exercise_id').unsigned().references('id').inTable('exercises').onDelete('cascade').onUpdate('cascade')
       table.timestamps()
     })
   }

@@ -31,6 +31,7 @@ Route.group(() => {
   Route.get('trainings/my', 'TrainingController.getMyTrainings')
   Route.post('trainings', 'TrainingController.create')
   Route.put('trainings/:id/status', 'TrainingController.switchStatus')
+  Route.delete('trainings/:id', 'TrainingController.remove')
 }).prefix('api/app').middleware(['auth'])
 
 Route.group(() => {
