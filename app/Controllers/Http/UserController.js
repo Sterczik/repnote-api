@@ -7,7 +7,7 @@ const Mail = use('Mail')
 const { validate } = use('Validator')
 
 class UserController {
-  async signUp({ request, response, auth }) {
+  async register({ request, response, auth }) {
     try {
       const data = request.only(['name', 'email', 'password'])
       const userExists = await User.findBy('email', data.email)
@@ -111,7 +111,10 @@ class UserController {
       return response.status(HTTPStatus.OK)
         .json({
           success: true,
-          token
+          token,
+          user: {
+            id: userExists.id
+          }
         })
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({

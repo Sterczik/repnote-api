@@ -52,7 +52,7 @@ class TrainingController {
       .with('exercises')
       .with('exercises.rounds')
       .where('id', request.params.id)
-      .fetch()
+      .first()
 
     if (training) {
       return response.status(HTTPStatus.OK).json(training)
@@ -127,7 +127,7 @@ class TrainingController {
         .with('exercises')
         .with('exercises.rounds')
         .where('id', training.id)
-        .fetch()
+        .first()
 
       if (trainingToFind) {
         return response.status(HTTPStatus.OK).json(trainingToFind);
@@ -151,10 +151,10 @@ class TrainingController {
         .with('exercises')
         .with('exercises.rounds')
         .where('id', request.params.id)
-        .fetch()
+        .first()
 
       if (training) {
-        if (training.id === user.id) {
+        if (training['user_id'] == user.id) {
           training.private = !training.private
 
           await training.save()
