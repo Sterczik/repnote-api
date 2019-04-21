@@ -16,9 +16,11 @@
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route')
 
+// Route.any('*', ({ view }) => view.render('main'))
 Route.group(() => {
   Route.post('users/register', 'UserController.register')
   Route.post('users/login', 'UserController.login')
+  Route.post('users/authenticated/:provider', 'UserController.socialLoginCallback')
 }).prefix('api/app')
 
 Route.group(() => {

@@ -7,10 +7,69 @@ const Mail = use('Mail')
 const { validate } = use('Validator')
 
 class UserController {
+  async socialLoginCallback ({request, params, ally, auth, response}) {
+    try {
+      const provider = params.provider
+      const bodyResponse = request.raw()
+      const token = JSON.parse(bodyResponse)
+      const accessToken = token.response
+
+      const userData = await ally.driver(params.provider).getUserByToken(accessToken)
+
+      const authUser = await User
+        .query()
+        .where({
+          'provider': provider,
+          'provider_id': userData.getId()
+        })
+        .first()
+
+      if (!(authUser === null)) {
+        const userToken = await auth.generate(authUser)
+        return response.status(HTTPStatus.OK)
+          .json({
+            success: true,
+            token: { ...userToken },
+            // userData: userData.getAccessToken(),
+            user: {
+              id: authUser.id
+            }
+          });
+      }
+
+      const user = new User()
+      user.name = userData.getName()
+      user.username = userData.getNickname()
+      user.email = userData.getEmail()
+      user.provider_id = userData.getId()
+      user.avatar = userData.getAvatar()
+      user.provider = provider
+
+      await user.save()
+
+      const userToken = await auth.generate(user)
+
+      return response.status(HTTPStatus.CREATED)
+        .json({
+          success: true,
+          token: { ...userToken },
+          // userData: userData.getAccessToken(),
+          user: {
+            id: user.id
+          }
+        });
+    } catch (e) {
+      return response.status(HTTPStatus.INTERNAL_SERVER_ERROR)
+        .json({
+          error: JSON.stringify(e)
+        })
+    }
+  }
+
   async register({ request, response, auth }) {
     try {
-      const data = request.only(['name', 'email', 'password'])
-      const userExists = await User.findBy('email', data.email)
+      const inputData = request.only(['name', 'email', 'password'])
+      const userExists = await User.findBy('email', inputData.email)
 
       if (userExists) {
         return response.status(HTTPStatus.BAD_REQUEST)
@@ -37,6 +96,13 @@ class UserController {
             message: validation.messages()
           }
         })
+      }
+
+      const data = {
+        ...inputData,
+        avatar: 'empty',
+        provider_id: '1',
+        provider: 'local'
       }
 
       await User.create(data)
