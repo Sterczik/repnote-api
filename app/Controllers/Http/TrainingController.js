@@ -80,7 +80,7 @@ class TrainingController {
         })
       }
 
-      const trainingData = request.only(['name', 'private', 'category', 'exercises'])
+      const trainingData = request.only(['name', 'private', 'description', 'goal', 'category', 'exercises'])
 
       const category = await TrainingCategory
         .query()
