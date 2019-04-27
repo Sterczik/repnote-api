@@ -54,8 +54,20 @@ class TrainingController {
       .where('id', request.params.id)
       .first()
 
+    const user = await auth.getUser()
+
     if (training) {
-      return response.status(HTTPStatus.OK).json(training)
+      if (training.private === false) {
+        return response.status(HTTPStatus.OK).json(training)
+      } else {
+        if (user) {
+          if (training['user_id'] == user.id) {
+            return response.status(HTTPStatus.OK).json(training)
+          }
+          return response.status(HTTPStatus.UNAUTHORIZED).json({ message: "You have no permissions to manage this Training." })
+        }
+        return response.status(HTTPStatus.UNAUTHORIZED).json({ message: "You have no permissions to manage this Training." })
+      }
     }
     return response.status(HTTPStatus.NOT_FOUND).json(HTTPStatus.NOT_FOUND)
   }
@@ -81,6 +93,26 @@ class TrainingController {
       }
 
       const trainingData = request.only(['name', 'private', 'description', 'goal', 'category', 'exercises'])
+
+      if (trainingData.exercises.length > 10) {
+        return response.status(HTTPStatus.BAD_REQUEST).json({
+          success: false,
+          errors: {
+            message: "You have too many exercises in Training"
+          }
+        })
+      }
+
+      trainingData.exercises.forEach((exercise) => {
+        if (exercise.rounds.length > 20) {
+          return response.status(HTTPStatus.BAD_REQUEST).json({
+            success: false,
+            errors: {
+              message: "You have too many rounds in exercises"
+            }
+          })
+        }
+      })
 
       const category = await TrainingCategory
         .query()
