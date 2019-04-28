@@ -40,3 +40,11 @@ Route.group(() => {
   Route.get('trainings', 'TrainingController.getAll')
   Route.get('trainings/:id', 'TrainingController.getOne')
 }).prefix('api/app')
+
+Route.group(() => {
+  Route.get('users', 'Admin/UserController.getUsers')
+  Route.get('users/:id', 'Admin/UserController.getUser')
+
+  Route.get('trainings', 'Admin/TrainingController.getTrainings')
+  Route.get('trainings/:id', 'Admin/TrainingController.getTraining')
+}).prefix('api/admin')
