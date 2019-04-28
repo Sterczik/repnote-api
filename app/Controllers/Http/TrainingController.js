@@ -30,22 +30,31 @@ class TrainingController {
   }
 
   async getMyTrainings({ request, response, auth }) {
-    const user = await auth.getUser()
+    try {
+      const user = await auth.getUser()
 
-    const trainings = await Training
-      .query()
-      .with('user')
-      .with('category')
-      .with('exercises')
-      .with('exercises.rounds')
-      .where('user_id', user.id)
-      .fetch()
-
-    return response.status(HTTPStatus.OK).json(trainings)
+      const trainings = await Training
+        .query()
+        .with('user')
+        .with('category')
+        .with('exercises')
+        .with('exercises.rounds')
+        .where('user_id', user.id)
+        .fetch()
+  
+      return response.status(HTTPStatus.OK).json(trainings)
+    } catch(err) {
+      return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
+        status: 'error',
+        message: 'Something went wrong',
+        err
+      })
+    }
   }
 
   async getOne({ request, response, auth }) {
-    const training = await Training
+    try {
+      const training = await Training
       .query()
       .with('user')
       .with('category')
@@ -54,22 +63,29 @@ class TrainingController {
       .where('id', request.params.id)
       .first()
 
-    const user = await auth.getUser()
+      const user = await auth.getUser()
 
-    if (training) {
-      if (training.private === false) {
-        return response.status(HTTPStatus.OK).json(training)
-      } else {
-        if (user) {
-          if (training['user_id'] == user.id) {
-            return response.status(HTTPStatus.OK).json(training)
+      if (training) {
+        if (training.private === false) {
+          return response.status(HTTPStatus.OK).json(training)
+        } else {
+          if (user) {
+            if (training['user_id'] == user.id) {
+              return response.status(HTTPStatus.OK).json(training)
+            }
+            return response.status(HTTPStatus.UNAUTHORIZED).json({ message: "You have no permissions to manage this Training." })
           }
           return response.status(HTTPStatus.UNAUTHORIZED).json({ message: "You have no permissions to manage this Training." })
         }
-        return response.status(HTTPStatus.UNAUTHORIZED).json({ message: "You have no permissions to manage this Training." })
       }
+      return response.status(HTTPStatus.NOT_FOUND).json(HTTPStatus.NOT_FOUND)
+    } catch(err) {
+      return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
+        status: 'error',
+        message: 'Something went wrong',
+        err
+      })
     }
-    return response.status(HTTPStatus.NOT_FOUND).json(HTTPStatus.NOT_FOUND)
   }
 
   async create({ request, response, auth }) {

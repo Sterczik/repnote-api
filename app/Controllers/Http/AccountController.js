@@ -44,16 +44,23 @@ class AccountController {
   }
 
   async getUserTrainings({ request, response }) {
-    const slug = request.params.name
-    const user = await User
-      .query()
-      .with('trainings', (builder) => {
-        builder.where('private', false)
+    try {
+      const slug = request.params.name
+      const user = await User
+        .query()
+        .with('trainings', (builder) => {
+          builder.where('private', false)
+        })
+        .where('slug', slug)
+        .fetch()
+  
+      return response.status(HTTPStatus.OK).json(user.toJSON())
+    } catch(err) {
+      return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
+        status: 'error',
+        message: 'Something went wrong!'
       })
-      .where('slug', slug)
-      .fetch()
-
-    return response.status(HTTPStatus.OK).json(user.toJSON())
+    }
   }
 }
 
