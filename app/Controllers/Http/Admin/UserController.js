@@ -11,7 +11,7 @@ class UserController {
       return response.status(HTTPStatus.OK)
       .json({
         success: true,
-        message: 'You successfully fetched profile.',
+        message: 'You successfully fetched users.',
         users
       })
     } catch(err) {
@@ -32,6 +32,7 @@ class UserController {
       if (user) {
         return response.status(HTTPStatus.OK).json(user)
       }
+      return response.status(HTTPStatus.NOT_FOUND).json(HTTPStatus.NOT_FOUND)
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
