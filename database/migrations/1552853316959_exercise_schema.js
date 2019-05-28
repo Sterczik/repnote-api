@@ -9,7 +9,7 @@ class ExerciseSchema extends Schema {
       table.increments()
       table.string('name')
       table.integer('training_id').unsigned().references('id').inTable('trainings').onDelete('cascade').onUpdate('cascade')
-      // table.integer('category_id').unsigned().references('id').inTable('exercise_categories')
+      table.integer('category_id').unsigned().references('id').inTable('exercise_categories')
       table.timestamps()
     })
   }

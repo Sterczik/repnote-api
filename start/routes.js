@@ -52,4 +52,9 @@ Route.group(() => {
   Route.get('trainingCategories/:id', 'Admin/TrainingCategoryController.getTrainingCategory')
   Route.post('trainingCategories', 'Admin/TrainingCategoryController.addTrainingCategory')
   Route.delete('trainingCategories/:id', 'Admin/TrainingCategoryController.removeTrainingCategory')
+
+  Route.get('exerciseCategories', 'Admin/ExerciseCategoryController.getExerciseCategories')
+  Route.get('exerciseCategories/:id', 'Admin/ExerciseCategoryController.getExerciseCategory')
+  Route.post('exerciseCategories', 'Admin/ExerciseCategoryController.addExerciseCategory')
+  Route.delete('exerciseCategories/:id', 'Admin/ExerciseCategoryController.removeExerciseCategory')
 }).prefix('api/admin')
