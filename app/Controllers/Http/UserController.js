@@ -34,7 +34,7 @@ class UserController {
             user: {
               id: authUser.id
             }
-          });
+          })
       }
 
       const user = new User()
@@ -57,7 +57,7 @@ class UserController {
           user: {
             id: user.id
           }
-        });
+        })
     } catch (e) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR)
         .json({

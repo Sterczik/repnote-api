@@ -41,7 +41,7 @@ class TrainingController {
         .with('exercises.rounds')
         .where('user_id', user.id)
         .fetch()
-  
+
       return response.status(HTTPStatus.OK).json(trainings)
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
@@ -178,7 +178,7 @@ class TrainingController {
         .first()
 
       if (trainingToFind) {
-        return response.status(HTTPStatus.OK).json(trainingToFind);
+        return response.status(HTTPStatus.OK).json(trainingToFind)
       }
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
