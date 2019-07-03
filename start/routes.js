@@ -21,6 +21,9 @@ Route.group(() => {
   Route.post('users/register', 'UserController.register')
   Route.post('users/login', 'UserController.login')
   Route.post('users/authenticated/:provider', 'UserController.socialLoginCallback')
+
+  Route.get('trainingCategories', 'TrainingCategoryController.getTrainingCategories')
+  Route.get('exerciseCategories', 'ExerciseCategoryController.getExerciseCategories')
 }).prefix('api/app')
 
 Route.group(() => {

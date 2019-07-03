@@ -11,6 +11,9 @@ class Exercise extends Model {
   training () {
     return this.belongsTo('App/Models/Training', 'training_id', 'id')
   }
+  category () {
+    return this.belongsTo('App/Models/ExerciseCategory', 'category_id', 'id')
+  }
   rounds () {
     return this.hasMany('App/Models/Round', 'id', 'exercise_id')
   }
