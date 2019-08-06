@@ -16,11 +16,13 @@
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route')
 
-// Route.any('*', ({ view }) => view.render('main'))
 Route.group(() => {
   Route.post('users/register', 'UserController.register')
   Route.post('users/login', 'UserController.login')
   Route.post('users/authenticated/:provider', 'UserController.socialLoginCallback')
+
+  Route.get('trainingCategories', 'TrainingCategoryController.getTrainingCategories')
+  Route.get('exerciseCategories', 'ExerciseCategoryController.getExerciseCategories')
 }).prefix('api/app')
 
 Route.group(() => {
@@ -32,6 +34,7 @@ Route.group(() => {
 Route.group(() => {
   Route.get('trainings/my', 'TrainingController.getMyTrainings')
   Route.post('trainings', 'TrainingController.create')
+  Route.put('trainings/:id', 'TrainingController.update')
   Route.put('trainings/:id/status', 'TrainingController.switchStatus')
   Route.delete('trainings/:id', 'TrainingController.remove')
 }).prefix('api/app').middleware(['auth'])

@@ -5,6 +5,7 @@ const Training = use('App/Models/Training')
 const Exercise = use('App/Models/Exercise')
 const Round = use('App/Models/Round')
 const TrainingCategory = use('App/Models/TrainingCategory')
+const ExerciseCategory = use('App/Models/ExerciseCategory')
 const { validate } = use('Validator')
 
 class TrainingController {
@@ -15,6 +16,7 @@ class TrainingController {
         .with('user')
         .with('category')
         .with('exercises')
+        .with('exercises.category')
         .with('exercises.rounds')
         .where('private', false)
         .fetch()
@@ -38,6 +40,7 @@ class TrainingController {
         .with('user')
         .with('category')
         .with('exercises')
+        .with('exercises.category')
         .with('exercises.rounds')
         .where('user_id', user.id)
         .fetch()
@@ -59,18 +62,36 @@ class TrainingController {
       .with('user')
       .with('category')
       .with('exercises')
+      .with('exercises.category')
       .with('exercises.rounds')
       .where('id', request.params.id)
       .first()
 
-      const user = await auth.getUser()
+      let user = ''
+
+      try {
+        if (await auth.getUser()) {
+          user = await auth.getUser()
+        }
+      } catch(e) {}
+      // const user = await auth.getUser()
 
       if (training) {
         if (training.private === false) {
+          if (user) {
+            if (training['user_id'] == user.id) {
+              training.edit = true
+              return response.status(HTTPStatus.OK).json(training)
+            }
+            training.edit = false
+            return response.status(HTTPStatus.OK).json(training)
+          }
+          training.edit = false
           return response.status(HTTPStatus.OK).json(training)
         } else {
           if (user) {
             if (training['user_id'] == user.id) {
+              training.edit = true
               return response.status(HTTPStatus.OK).json(training)
             }
             return response.status(HTTPStatus.UNAUTHORIZED).json({ message: "You have no permissions to manage this Training." })
@@ -155,6 +176,15 @@ class TrainingController {
           name: exercise.name
         })
 
+        const exerciseCategory = await ExerciseCategory
+          .query()
+          .where('id', exercise.category)
+          .first()
+
+        await exerciseContainer
+          .category()
+          .associate(exerciseCategory)
+
         await exerciseContainer
           .training()
           .associate(training)
@@ -173,6 +203,7 @@ class TrainingController {
         .with('user')
         .with('category')
         .with('exercises')
+        .with('exercises.category')
         .with('exercises.rounds')
         .where('id', training.id)
         .first()
@@ -180,6 +211,18 @@ class TrainingController {
       if (trainingToFind) {
         return response.status(HTTPStatus.OK).json(trainingToFind)
       }
+    } catch(err) {
+      return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
+        status: 'error',
+        message: 'Something went wrong',
+        err
+      })
+    }
+  }
+
+  async update({ request, response, auth }) {
+    try {
+      return response.status(HTTPStatus.NOT_FOUND).json({ message: "Not found." })
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
@@ -197,6 +240,7 @@ class TrainingController {
         .with('user')
         .with('category')
         .with('exercises')
+        .with('exercises.category')
         .with('exercises.rounds')
         .where('id', request.params.id)
         .first()
@@ -228,6 +272,7 @@ class TrainingController {
         .with('user')
         .with('category')
         .with('exercises')
+        .with('exercises.category')
         .with('exercises.rounds')
         .where('id', request.params.id)
         .first()
