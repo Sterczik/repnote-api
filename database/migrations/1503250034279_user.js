@@ -11,6 +11,7 @@ class UserSchema extends Schema {
       table.string('avatar').nullable()
       table.string('username', 80).nullable()
       table.string('email', 254).notNullable().unique()
+      table.text('description').nullable()
       table.string('provider_id').nullable()
       table.string('provider').nullable()
       table.string('password', 60).nullable()

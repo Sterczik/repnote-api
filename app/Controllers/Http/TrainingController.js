@@ -11,7 +11,14 @@ const { validate } = use('Validator')
 class TrainingController {
   async getAll({ request, response }) {
     try {
-      const trainings = await Training
+      let { perPage, page, sort, search } = request.only(['perPage', 'page', 'sort', 'search'])
+
+      perPage = parseInt(perPage) || 24
+      page = parseInt(page) || 1
+      sort = parseInt(sort) || 1
+      search = `%${decodeURIComponent(search)}%` || ''
+
+      const trainingsInfo = await Training
         .query()
         .with('user')
         .with('category')
@@ -19,33 +26,11 @@ class TrainingController {
         .with('exercises.category')
         .with('exercises.rounds')
         .where('private', false)
-        .fetch()
+        .where('name', 'like', search)
+        .orderBy('created_at', 'desc')
+        .paginate(page, perPage)
 
-      return response.status(HTTPStatus.OK).json(trainings)
-    } catch(err) {
-      return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
-        status: 'error',
-        message: 'Something went wrong',
-        err
-      })
-    }
-  }
-
-  async getMyTrainings({ request, response, auth }) {
-    try {
-      const user = await auth.getUser()
-
-      const trainings = await Training
-        .query()
-        .with('user')
-        .with('category')
-        .with('exercises')
-        .with('exercises.category')
-        .with('exercises.rounds')
-        .where('user_id', user.id)
-        .fetch()
-
-      return response.status(HTTPStatus.OK).json(trainings)
+      return response.status(HTTPStatus.OK).json(trainingsInfo)
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
@@ -68,13 +53,11 @@ class TrainingController {
       .first()
 
       let user = ''
-
       try {
         if (await auth.getUser()) {
           user = await auth.getUser()
         }
       } catch(e) {}
-      // const user = await auth.getUser()
 
       if (training) {
         if (training.private === false) {

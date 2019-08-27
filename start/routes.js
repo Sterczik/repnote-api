@@ -26,13 +26,16 @@ Route.group(() => {
 }).prefix('api/app')
 
 Route.group(() => {
-  Route.get('users/profile/my', 'AccountController.getMyProfile')
-  Route.get('users/profile/:name', 'AccountController.getProfile')
-  Route.get('users/profile/:name/trainings', 'AccountController.getUserTrainings')
+  Route.get('users/profile', 'AccountController.getProfile')
+  Route.put('users/profile', 'AccountController.editProfile')
 }).prefix('api/app').middleware(['auth'])
 
 Route.group(() => {
-  Route.get('trainings/my', 'TrainingController.getMyTrainings')
+  Route.get('users/:name', 'AccountController.getUserProfile')
+  Route.get('users/:name/trainings', 'AccountController.getUserTrainings')
+}).prefix('api/app')
+
+Route.group(() => {
   Route.post('trainings', 'TrainingController.create')
   Route.put('trainings/:id', 'TrainingController.update')
   Route.put('trainings/:id/status', 'TrainingController.switchStatus')

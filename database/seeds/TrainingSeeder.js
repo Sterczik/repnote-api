@@ -19,9 +19,11 @@ const Factory = use('Factory')
 class TrainingSeeder {
   async run () {
 
-    const training = await Training.create({ name: 'Gym Training', private: false, 'user_id': 1, 'category_id': 1 })
+    for (let i = 1; i <= 100; i++) {
+      const training = await Training.create({ name: `Gym Training ${i}`, private: false, 'user_id': 1, 'category_id': 1 })
 
-    await training.exercises().create({ name: 'Exercise 1' })
+      await training.exercises().create({ name: 'Exercise 1' })
+    }
 
     Database.close()
   }

@@ -2,17 +2,21 @@
 
 const HTTPStatus = require('http-status')
 const User = use('App/Models/User')
+const { validate } = use('Validator')
 
 class AccountController {
-  async getMyProfile({ request, response, auth }) {
+  async getProfile({ request, response, auth }) {
     try {
-      const user = await auth.getUser()
+      const loggedUser = await auth.getUser()
+
+      const user = await User
+        .query()
+        .with('trainings')
+        .where('id', loggedUser.id)
+        .first()
+
       return response.status(HTTPStatus.OK)
-        .json({
-          success: true,
-          message: 'You successfully fetched your profile.',
-          user
-        })
+        .json(user)
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
@@ -21,18 +25,55 @@ class AccountController {
     }
   }
 
-  async getProfile({ request, response }) {
+  async editProfile({ request, response, auth }) {
+    try {
+      const loggedUser = await auth.getUser()
+
+      const validation = await validate(request.only(['name']), {
+        name: 'required|min:5|max:60'
+      })
+
+      if (validation.fails()) {
+        return response.status(HTTPStatus.BAD_REQUEST).json({
+          success: false,
+          errors: {
+            message: validation.messages()
+          }
+        })
+      }
+
+      const profileData = request.only(['name'])
+
+      const updatedUser = await User
+        .query()
+        .where('id', loggedUser.id)
+        .update({ name: profileData.name })
+
+      return response.status(HTTPStatus.OK)
+        .json(updatedUser)
+
+    } catch(err) {
+      return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
+        status: 'error',
+        message: 'Something went wrong!'
+      })
+    }
+  }
+
+  async getUserProfile({ request, response }) {
     try {
       const slug = request.params.name
-      const user = await User.findBy('slug', slug)
+      const user = await User
+        .query()
+        .with('trainings', (builder) => {
+          builder.where('private', false)
+        })
+        .where('slug', slug)
+        .first()
 
       if (user) {
         return response.status(HTTPStatus.OK)
-        .json({
-          success: true,
-          message: 'You successfully fetched profile.',
-          user
-        })
+          .json(user)
       }
       return response.status(HTTPStatus.NOT_FOUND).json(HTTPStatus.NOT_FOUND)
     } catch(err) {
@@ -53,7 +94,7 @@ class AccountController {
         })
         .where('slug', slug)
         .fetch()
-  
+
       return response.status(HTTPStatus.OK).json(user.toJSON())
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({

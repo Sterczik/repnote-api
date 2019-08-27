@@ -29,11 +29,8 @@ class UserController {
         return response.status(HTTPStatus.OK)
           .json({
             success: true,
-            token: { ...userToken },
+            token: { ...userToken }
             // userData: userData.getAccessToken(),
-            user: {
-              id: authUser.id
-            }
           })
       }
 
@@ -52,11 +49,8 @@ class UserController {
       return response.status(HTTPStatus.CREATED)
         .json({
           success: true,
-          token: { ...userToken },
+          token: { ...userToken }
           // userData: userData.getAccessToken(),
-          user: {
-            id: user.id
-          }
         })
     } catch (e) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR)
@@ -177,10 +171,7 @@ class UserController {
       return response.status(HTTPStatus.OK)
         .json({
           success: true,
-          token,
-          user: {
-            id: userExists.id
-          }
+          token
         })
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
