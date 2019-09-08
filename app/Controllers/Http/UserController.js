@@ -2,8 +2,10 @@
 
 const HTTPStatus = require('http-status')
 const User = use('App/Models/User')
+const Token = use('App/Models/Token')
 const Hash = use('Hash')
 const Mail = use('Mail')
+const Encryption = use('Encryption')
 const { validate } = use('Validator')
 
 class UserController {
@@ -101,12 +103,12 @@ class UserController {
 
       await User.create(data)
 
-      // await Mail.send('emails.welcome', user.toJSON(), (message) => {
-      //   message
-      //     .from('hello@sterczik.io')
-      //     .to(user.email)
-      //     .subject('Hello ✔')
-      // })
+      await Mail.send('emails.welcome', user.toJSON(), (message) => {
+        message
+          .from('hello@sterczik.io')
+          .to(user.email)
+          .subject('Hello ✔')
+      })
 
       return response.status(HTTPStatus.CREATED)
         .json({
@@ -177,6 +179,25 @@ class UserController {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
         message: 'Problem occured while trying to sigin. Please try again.'
+      })
+    }
+  }
+
+  async logout({request, response, auth}) {
+    try {
+      const { token } = request.only(['token'])
+      const decryptedToken = Encryption.decrypt(token)
+
+      await Token.query().where('token', decryptedToken).delete()
+
+      return response.status(HTTPStatus.OK)
+        .json({
+          success: true
+        })
+    } catch(err) {
+      return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
+        status: 'error',
+        message: 'Problem occured while trying to signout. Please try again.'
       })
     }
   }

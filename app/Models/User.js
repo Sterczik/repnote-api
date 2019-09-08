@@ -55,6 +55,23 @@ class User extends Model {
   trainings () {
     return this.hasMany('App/Models/Training', 'id', 'user_id')
   }
+  followers () {
+    return this.belongsToMany(
+      'App/Models/User',
+      'user_id',
+      'follower_id'
+    ).pivotTable('followers')
+  }
+  following () {
+    return this.belongsToMany(
+      'App/Models/User',
+      'follower_id',
+      'user_id'
+    ).pivotTable('followers')
+  }
+  likes () {
+    return this.hasMany('App/Models/TrainingLike', 'id', 'user_id')
+  }
 }
 
 module.exports = User

@@ -16,37 +16,45 @@
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route')
 
+// App Frontend
 Route.group(() => {
+  // Users
   Route.post('users/register', 'UserController.register')
   Route.post('users/login', 'UserController.login')
   Route.post('users/authenticated/:provider', 'UserController.socialLoginCallback')
-
-  Route.get('trainingCategories', 'TrainingCategoryController.getTrainingCategories')
-  Route.get('exerciseCategories', 'ExerciseCategoryController.getExerciseCategories')
-}).prefix('api/app')
-
-Route.group(() => {
-  Route.get('users/profile', 'AccountController.getProfile')
-  Route.put('users/profile', 'AccountController.editProfile')
-}).prefix('api/app').middleware(['auth'])
-
-Route.group(() => {
   Route.get('users/:name', 'AccountController.getUserProfile')
   Route.get('users/:name/trainings', 'AccountController.getUserTrainings')
+
+  // Trainings
+  Route.get('trainings', 'TrainingController.getAll')
+  Route.get('trainings/:id', 'TrainingController.getOne')
+
+  // Training Categories
+  Route.get('trainingCategories', 'TrainingCategoryController.getTrainingCategories')
+
+  // Exercise Categories
+  Route.get('exerciseCategories', 'ExerciseCategoryController.getExerciseCategories')
+
+  // Contact
+  Route.post('contactMessages', 'ContactController.sendMessage')
 }).prefix('api/app')
 
+// App Frontend with auth
 Route.group(() => {
+  // Users
+  Route.get('users/profile', 'AccountController.getProfile')
+  Route.put('users/profile', 'AccountController.editProfile')
+  Route.post('users/profile/avatar', 'AccountController.changeAvatar')
+  Route.post('users/logout', 'UserController.logout')
+
+  // Trainings
   Route.post('trainings', 'TrainingController.create')
   Route.put('trainings/:id', 'TrainingController.update')
   Route.put('trainings/:id/status', 'TrainingController.switchStatus')
   Route.delete('trainings/:id', 'TrainingController.remove')
-}).prefix('api/app').middleware(['auth'])
+}).prefix('api/app').middleware(['auth:jwt'])
 
-Route.group(() => {
-  Route.get('trainings', 'TrainingController.getAll')
-  Route.get('trainings/:id', 'TrainingController.getOne')
-}).prefix('api/app')
-
+// Admin Frontend
 Route.group(() => {
   Route.get('users', 'Admin/UserController.getUsers')
   Route.get('users/:id', 'Admin/UserController.getUser')
@@ -63,4 +71,8 @@ Route.group(() => {
   Route.get('exerciseCategories/:id', 'Admin/ExerciseCategoryController.getExerciseCategory')
   Route.post('exerciseCategories', 'Admin/ExerciseCategoryController.addExerciseCategory')
   Route.delete('exerciseCategories/:id', 'Admin/ExerciseCategoryController.removeExerciseCategory')
+
+  Route.get('contactMessages', 'Admin/ContactController.getMessages')
 }).prefix('api/admin')
+
+// Admin Frontend with auth

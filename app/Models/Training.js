@@ -20,6 +20,9 @@ class Training extends Model {
   exercises () {
     return this.hasMany('App/Models/Exercise', 'id', 'training_id')
   }
+  likes() {
+    return this.hasMany('App/Models/TrainingLike', 'id', 'training_id')
+  }
 }
 
 module.exports = Training

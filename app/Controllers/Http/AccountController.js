@@ -2,6 +2,7 @@
 
 const HTTPStatus = require('http-status')
 const User = use('App/Models/User')
+const Helpers = use('Helpers')
 const { validate } = use('Validator')
 
 class AccountController {
@@ -42,12 +43,12 @@ class AccountController {
         })
       }
 
-      const profileData = request.only(['name'])
+      const profileData = request.only(['name', 'description'])
 
       const updatedUser = await User
         .query()
         .where('id', loggedUser.id)
-        .update({ name: profileData.name })
+        .update({ name: profileData.name, description: profileData.description })
 
       return response.status(HTTPStatus.OK)
         .json(updatedUser)
@@ -60,6 +61,26 @@ class AccountController {
     }
   }
 
+  async changeAvatar({ request, response, auth }) {
+    try {
+      const loggedUser = await auth.getUser()
+      const photo = request.file('avatar')
+      await photo.move(Helpers.tmpPath('photos'), {
+        name: new Date().getTime() + '-' + loggedUser.id + '.' + photo.subtype,
+        overwrite: true
+      })
+
+      return response.status(HTTPStatus.OK)
+        .json({ success: true })
+    } catch(err) {
+      return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
+        status: 'error',
+        message: 'Something went wrong!',
+        err
+      })
+    }
+  }
+
   async getUserProfile({ request, response }) {
     try {
       const slug = request.params.name
@@ -68,6 +89,8 @@ class AccountController {
         .with('trainings', (builder) => {
           builder.where('private', false)
         })
+        .with('followers')
+        .with('following')
         .where('slug', slug)
         .first()
 

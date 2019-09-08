@@ -1,12 +1,13 @@
 'use strict'
 
 const HTTPStatus = require('http-status')
+const { validate } = use('Validator')
+const TrainingService = use('App/Services/TrainingService')
 const Training = use('App/Models/Training')
 const Exercise = use('App/Models/Exercise')
 const Round = use('App/Models/Round')
 const TrainingCategory = use('App/Models/TrainingCategory')
 const ExerciseCategory = use('App/Models/ExerciseCategory')
-const { validate } = use('Validator')
 
 class TrainingController {
   async getAll({ request, response }) {
@@ -18,17 +19,7 @@ class TrainingController {
       sort = parseInt(sort) || 1
       search = `%${decodeURIComponent(search)}%` || ''
 
-      const trainingsInfo = await Training
-        .query()
-        .with('user')
-        .with('category')
-        .with('exercises')
-        .with('exercises.category')
-        .with('exercises.rounds')
-        .where('private', false)
-        .where('name', 'like', search)
-        .orderBy('created_at', 'desc')
-        .paginate(page, perPage)
+      const trainingsInfo = await TrainingService.getAll(page, perPage, search)
 
       return response.status(HTTPStatus.OK).json(trainingsInfo)
     } catch(err) {
@@ -42,15 +33,7 @@ class TrainingController {
 
   async getOne({ request, response, auth }) {
     try {
-      const training = await Training
-      .query()
-      .with('user')
-      .with('category')
-      .with('exercises')
-      .with('exercises.category')
-      .with('exercises.rounds')
-      .where('id', request.params.id)
-      .first()
+      const training = await TrainingService.getOne(request.params.id)
 
       let user = ''
       try {
@@ -218,15 +201,7 @@ class TrainingController {
   async switchStatus({ request, response, auth }) {
     try {
       const user = await auth.getUser()
-      const training = await Training
-        .query()
-        .with('user')
-        .with('category')
-        .with('exercises')
-        .with('exercises.category')
-        .with('exercises.rounds')
-        .where('id', request.params.id)
-        .first()
+      const training = await TrainingService.toggleStatus(request.params.id)
 
       if (training) {
         if (training['user_id'] == user.id) {
@@ -250,16 +225,7 @@ class TrainingController {
   async remove({ request, response, auth }) {
     try {
       const user = await auth.getUser()
-      const training = await Training
-        .query()
-        .with('user')
-        .with('category')
-        .with('exercises')
-        .with('exercises.category')
-        .with('exercises.rounds')
-        .where('id', request.params.id)
-        .first()
-
+      const training = await TrainingService.remove(request.params.id)
       if (training) {
         if (training['user_id'] == user.id) {
           await training.delete()
