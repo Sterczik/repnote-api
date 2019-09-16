@@ -1,13 +1,13 @@
 'use strict'
 
 const HTTPStatus = require('http-status')
-const TrainingCategory = use('App/Models/TrainingCategory')
+const TrainingCategoryService = use('App/Services/TrainingCategoryService')
 const { validate } = use('Validator')
 
 class TrainingCategoryController {
   async getTrainingCategories({ request, response }) {
     try {
-      const categories = await TrainingCategory.all()
+      const categories = await TrainingCategoryService.getAll()
 
       return response.status(HTTPStatus.OK).json(categories)
     } catch(err) {
@@ -21,15 +21,12 @@ class TrainingCategoryController {
 
   async getTrainingCategory({ request, response }) {
     try {
-      const category = await TrainingCategory
-        .query()
-        .where('id', request.params.id)
-        .first()
+      const category = await TrainingCategoryService.getOne(request.params.id)
 
-        if (category) {
-          return response.status(HTTPStatus.OK).json(category)
-        }
-        return response.status(HTTPStatus.NOT_FOUND).json(HTTPStatus.NOT_FOUND)
+      if (category) {
+        return response.status(HTTPStatus.OK).json(category)
+      }
+      return response.status(HTTPStatus.NOT_FOUND).json(HTTPStatus.NOT_FOUND)
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
@@ -56,7 +53,7 @@ class TrainingCategoryController {
         })
       }
 
-      const category = await TrainingCategory.create(inputData)
+      const category = await TrainingCategoryService.create(inputData)
 
       return response.status(HTTPStatus.CREATED).json(category)
     } catch(err) {
@@ -70,17 +67,14 @@ class TrainingCategoryController {
 
   async removeTrainingCategory({ request, response }) {
     try {
-      const category = await TrainingCategory
-        .query()
-        .where('id', request.params.id)
-        .first()
+      const category = await TrainingCategoryService.getOne(request.params.id)
 
-        if (category) {
-          await category.delete()
+      if (category) {
+        await TrainingCategoryService.remove(category)
 
-          return response.status(HTTPStatus.OK).json(category)
-        }
-        return response.status(HTTPStatus.NOT_FOUND).json(HTTPStatus.NOT_FOUND)
+        return response.status(HTTPStatus.OK).json(category)
+      }
+      return response.status(HTTPStatus.NOT_FOUND).json(HTTPStatus.NOT_FOUND)
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',

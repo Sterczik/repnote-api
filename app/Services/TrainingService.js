@@ -3,11 +3,26 @@
 const Training = use('App/Models/Training')
 
 const TrainingService = {
-  async getAll(page, perPage, search) {
+  async getAll() {
     const trainings = await Training
       .query()
       .with('user')
       .with('category')
+      .with('advancementLevel')
+      .with('exercises')
+      .with('exercises.category')
+      .with('exercises.rounds')
+      .with('likes')
+      .fetch()
+
+    return trainings
+  },
+  async getAllWithPagination(page, perPage, search) {
+    const trainings = await Training
+      .query()
+      .with('user')
+      .with('category')
+      .with('advancementLevel')
       .with('exercises')
       .with('exercises.category')
       .with('exercises.rounds')
@@ -24,6 +39,7 @@ const TrainingService = {
       .query()
       .with('user')
       .with('category')
+      .with('advancementLevel')
       .with('exercises')
       .with('exercises.category')
       .with('exercises.rounds')
@@ -38,6 +54,7 @@ const TrainingService = {
       .query()
       .with('user')
       .with('category')
+      .with('advancementLevel')
       .with('exercises')
       .with('exercises.category')
       .with('exercises.rounds')
@@ -47,19 +64,32 @@ const TrainingService = {
 
     return training
   },
-  async remove(id) {
+  async create(data) {
     const training = await Training
-      .query()
-      .with('user')
-      .with('category')
-      .with('exercises')
-      .with('exercises.category')
-      .with('exercises.rounds')
-      .with('likes')
-      .where('id', id)
-      .first()
+      .create({
+        name: data.name,
+        private: data.private,
+        description: data.description,
+        goal: data.goal
+      })
 
     return training
+  },
+  async update(id, data) {
+    const training = await Training
+      .query()
+      .where('id', id)
+      .update({
+        name: data.name,
+        private: data.private,
+        description: data.description,
+        goal: data.goal
+      })
+
+    return training
+  },
+  async remove(training) {
+    await training.delete()
   }
 }
 

@@ -3,10 +3,10 @@
 const HTTPStatus = require('http-status')
 const { validate } = use('Validator')
 const TrainingService = use('App/Services/TrainingService')
-const Training = use('App/Models/Training')
+const TrainingCategoryService = use('App/Services/TrainingCategoryService')
+
 const Exercise = use('App/Models/Exercise')
 const Round = use('App/Models/Round')
-const TrainingCategory = use('App/Models/TrainingCategory')
 const ExerciseCategory = use('App/Models/ExerciseCategory')
 
 class TrainingController {
@@ -19,7 +19,7 @@ class TrainingController {
       sort = parseInt(sort) || 1
       search = `%${decodeURIComponent(search)}%` || ''
 
-      const trainingsInfo = await TrainingService.getAll(page, perPage, search)
+      const trainingsInfo = await TrainingService.getAllWithPagination(page, perPage, search)
 
       return response.status(HTTPStatus.OK).json(trainingsInfo)
     } catch(err) {
@@ -117,17 +117,15 @@ class TrainingController {
         }
       })
 
-      const category = await TrainingCategory
-        .query()
-        .where('id', trainingData.category)
-        .first()
+      const category = await TrainingCategoryService.getOne(trainingData.category)
 
-      const training = await Training.create({
-        name: trainingData.name,
-        private: trainingData.private,
-        description: trainingData.description,
-        goal: trainingData.goal
-      })
+      const training = await TrainingService
+        .create({
+          name: trainingData.name,
+          private: trainingData.private,
+          description: trainingData.description,
+          goal: trainingData.goal
+        })
 
       await training
         .category()
@@ -164,15 +162,7 @@ class TrainingController {
 
       // Training is saved, now it's time to retrieve it from database with all information
 
-      const trainingToFind = await Training
-        .query()
-        .with('user')
-        .with('category')
-        .with('exercises')
-        .with('exercises.category')
-        .with('exercises.rounds')
-        .where('id', training.id)
-        .first()
+      const trainingToFind = await TrainingService.getOne(training.id)
 
       if (trainingToFind) {
         return response.status(HTTPStatus.OK).json(trainingToFind)
@@ -188,7 +178,32 @@ class TrainingController {
 
   async update({ request, response, auth }) {
     try {
-      return response.status(HTTPStatus.NOT_FOUND).json({ message: "Not found." })
+      const validation = await validate(request.only(['name', 'private', 'description', 'goal']), {
+        name: 'required|min:5|max:60|unique:trainings',
+        private: 'required',
+        description: 'required',
+        goal: 'required'
+      })
+
+      if (validation.fails()) {
+        return response.status(HTTPStatus.BAD_REQUEST).json({
+          success: false,
+          errors: {
+            message: validation.messages()
+          }
+        })
+      }
+
+      const trainingData = request.only(['name', 'private', 'description', 'goal'])
+
+      const training = await TrainingService.update(request.params.id, {
+        name: trainingData.name,
+        private: trainingData.private,
+        description: trainingData.description,
+        goal: trainingData.goal
+      })
+
+      return response.status(HTTPStatus.OK).json(training)
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
@@ -225,10 +240,10 @@ class TrainingController {
   async remove({ request, response, auth }) {
     try {
       const user = await auth.getUser()
-      const training = await TrainingService.remove(request.params.id)
+      const training = await TrainingService.getOne(request.params.id)
       if (training) {
         if (training['user_id'] == user.id) {
-          await training.delete()
+          await TrainingService.remove(training)
           return response.status(HTTPStatus.OK).json(training)
         }
         return response.status(HTTPStatus.UNAUTHORIZED).json({ message: "You have no permissions to manage this Training." })

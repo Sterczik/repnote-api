@@ -1,7 +1,7 @@
 'use strict'
 
 const HTTPStatus = require('http-status')
-const Contact = use('App/Models/Contact')
+const ContactService = use('App/Services/ContactService')
 const { validate } = use('Validator')
 
 class ContactController {
@@ -17,16 +17,17 @@ class ContactController {
 
       if (validation.fails()) {
         return response.status(HTTPStatus.BAD_REQUEST).json({
-          success: false,
-          errors: {
-            message: validation.messages()
-          }
+          status: 'error',
+          message: validation.messages()
         })
       }
 
-      const message = await Contact.create(inputData)
+      await ContactService.create(inputData)
 
-      return response.status(HTTPStatus.CREATED).json(message)
+      return response.status(HTTPStatus.CREATED).json({
+        status: 'success',
+        message: 'Message has sent successfully!'
+      })
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
