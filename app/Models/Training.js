@@ -20,8 +20,11 @@ class Training extends Model {
   exercises () {
     return this.hasMany('App/Models/Exercise', 'id', 'training_id')
   }
-  likes() {
+  likes () {
     return this.hasMany('App/Models/TrainingLike', 'id', 'training_id')
+  }
+  advancementLevel () {
+    return this.belongsTo('App/Models/TrainingAdvancementLevel', 'advancement_level_id', 'id')
   }
 }
 

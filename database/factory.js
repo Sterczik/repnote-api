@@ -37,7 +37,8 @@ Factory.blueprint('App/Models/Training', (faker) => {
     private: faker.bool(),
     description: faker.sentence(),
     goal: faker.sentence(),
-    category_id: faker.integer({ min: 1, max: 3 })
+    category_id: faker.integer({ min: 1, max: 3 }),
+    advancement_level_id: faker.integer({ min: 1, max: 3 })
   }
 })
 

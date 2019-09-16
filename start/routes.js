@@ -35,6 +35,9 @@ Route.group(() => {
   // Exercise Categories
   Route.get('exerciseCategories', 'ExerciseCategoryController.getExerciseCategories')
 
+  // Training Advancement Levels
+  Route.get('trainingAdvancementLevels', 'TrainingAdvancementLevelController.getAdvancementLevels')
+
   // Contact
   Route.post('contactMessages', 'ContactController.sendMessage')
 }).prefix('api/app')

@@ -11,6 +11,8 @@ class TrainingSchema extends Schema {
       table.boolean('private').defaultTo(false)
       table.string('description')
       table.string('goal')
+      table.integer('days_per_week')
+      table.integer('advancement_level_id').unsigned().references('id').inTable('training_advancement_levels')
       table.integer('user_id').unsigned().references('id').inTable('users')
       table.integer('category_id').unsigned().references('id').inTable('training_categories')
       table.timestamps()
