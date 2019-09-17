@@ -1,12 +1,12 @@
 'use strict'
 
 const HTTPStatus = require('http-status')
-const TrainingService = use('App/Services/TrainingService')
+const TrainingQuery = use('App/Queries/TrainingQuery')
 
 class TrainingController {
   async getTrainings({ request, response }) {
     try {
-      const trainings = await TrainingService.getAll()
+      const trainings = await TrainingQuery.getAll()
 
       return response.status(HTTPStatus.OK).json(trainings)
     } catch(err) {
@@ -20,7 +20,7 @@ class TrainingController {
 
   async getTraining({ request, response }) {
     try {
-      const training = await TrainingService.getOne(request.params.id)
+      const training = await TrainingQuery.getOne(request.params.id)
 
       if (training) {
         return response.status(HTTPStatus.OK).json(training)

@@ -1,12 +1,12 @@
 'use strict'
 
 const HTTPStatus = require('http-status')
-const ContactService = use('App/Services/ContactService')
+const ContactQuery = use('App/Queries/ContactQuery')
 
 class ContactController {
   async getMessages({ request, response }) {
     try {
-      const messages = await ContactService.getAll()
+      const messages = await ContactQuery.getAll()
 
       return response.status(HTTPStatus.OK).json(messages)
     } catch(err) {

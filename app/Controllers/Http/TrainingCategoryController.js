@@ -1,12 +1,12 @@
 'use strict'
 
 const HTTPStatus = require('http-status')
-const TrainingCategoryService = use('App/Services/TrainingCategoryService')
+const TrainingCategoryQuery = use('App/Queries/TrainingCategoryQuery')
 
 class TrainingCategoryController {
   async getTrainingCategories({ request, response }) {
     try {
-      const categories = await TrainingCategoryService.getAll()
+      const categories = await TrainingCategoryQuery.getAll()
 
       return response.status(HTTPStatus.OK).json(categories)
     } catch(err) {

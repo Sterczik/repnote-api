@@ -2,7 +2,7 @@
 
 const Contact = use('App/Models/Contact')
 
-const ContactService = {
+const ContactQuery = {
   async getAll() {
     const contactMessages = await Contact
       .all()
@@ -17,4 +17,4 @@ const ContactService = {
   }
 }
 
-module.exports = ContactService
+module.exports = ContactQuery

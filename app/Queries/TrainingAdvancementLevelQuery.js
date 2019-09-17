@@ -2,7 +2,7 @@
 
 const TrainingAdvancementLevel = use('App/Models/TrainingAdvancementLevel')
 
-const TrainingAdvancementLevelService = {
+const TrainingAdvancementLevelQuery = {
   async getAll() {
     const levels = await TrainingAdvancementLevel
       .all()
@@ -28,4 +28,4 @@ const TrainingAdvancementLevelService = {
   }
 }
 
-module.exports = TrainingAdvancementLevelService
+module.exports = TrainingAdvancementLevelQuery

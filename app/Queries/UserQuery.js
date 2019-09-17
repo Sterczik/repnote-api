@@ -2,7 +2,7 @@
 
 const User = use('App/Models/User')
 
-const UserService = {
+const UserQuery = {
   async getAll() {
     const users = await User
       .all()
@@ -19,4 +19,4 @@ const UserService = {
   }
 }
 
-module.exports = UserService
+module.exports = UserQuery

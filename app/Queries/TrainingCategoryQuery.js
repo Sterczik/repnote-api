@@ -1,16 +1,16 @@
 'use strict'
 
-const ExerciseCategory = use('App/Models/ExerciseCategory')
+const TrainingCategory = use('App/Models/TrainingCategory')
 
-const ExerciseCategoryService = {
+const TrainingCategoryQuery = {
   async getAll() {
-    const categories = await ExerciseCategory
+    const categories = await TrainingCategory
       .all()
 
     return categories
   },
   async getOne(id) {
-    const category = await ExerciseCategory
+    const category = await TrainingCategory
       .query()
       .where('id', id)
       .first()
@@ -18,7 +18,7 @@ const ExerciseCategoryService = {
     return category
   },
   async create(data) {
-    const category = await ExerciseCategory
+    const category = await TrainingCategory
       .create(data)
 
     return category
@@ -28,4 +28,4 @@ const ExerciseCategoryService = {
   }
 }
 
-module.exports = ExerciseCategoryService
+module.exports = TrainingCategoryQuery

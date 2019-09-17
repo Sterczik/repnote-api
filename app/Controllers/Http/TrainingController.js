@@ -2,8 +2,8 @@
 
 const HTTPStatus = require('http-status')
 const { validate } = use('Validator')
-const TrainingService = use('App/Services/TrainingService')
-const TrainingCategoryService = use('App/Services/TrainingCategoryService')
+const TrainingQuery = use('App/Queries/TrainingQuery')
+const TrainingCategoryQuery = use('App/Queries/TrainingCategoryQuery')
 
 const Exercise = use('App/Models/Exercise')
 const Round = use('App/Models/Round')
@@ -19,7 +19,7 @@ class TrainingController {
       sort = parseInt(sort) || 1
       search = `%${decodeURIComponent(search)}%` || ''
 
-      const trainingsInfo = await TrainingService.getAllWithPagination(page, perPage, search)
+      const trainingsInfo = await TrainingQuery.getAllWithPagination(page, perPage, search)
 
       return response.status(HTTPStatus.OK).json(trainingsInfo)
     } catch(err) {
@@ -33,7 +33,7 @@ class TrainingController {
 
   async getOne({ request, response, auth }) {
     try {
-      const training = await TrainingService.getOne(request.params.id)
+      const training = await TrainingQuery.getOne(request.params.id)
 
       let user = ''
       try {
@@ -117,9 +117,9 @@ class TrainingController {
         }
       })
 
-      const category = await TrainingCategoryService.getOne(trainingData.category)
+      const category = await TrainingCategoryQuery.getOne(trainingData.category)
 
-      const training = await TrainingService
+      const training = await TrainingQuery
         .create({
           name: trainingData.name,
           private: trainingData.private,
@@ -162,7 +162,7 @@ class TrainingController {
 
       // Training is saved, now it's time to retrieve it from database with all information
 
-      const trainingToFind = await TrainingService.getOne(training.id)
+      const trainingToFind = await TrainingQuery.getOne(training.id)
 
       if (trainingToFind) {
         return response.status(HTTPStatus.OK).json(trainingToFind)
@@ -196,7 +196,7 @@ class TrainingController {
 
       const trainingData = request.only(['name', 'private', 'description', 'goal'])
 
-      const training = await TrainingService.update(request.params.id, {
+      const training = await TrainingQuery.update(request.params.id, {
         name: trainingData.name,
         private: trainingData.private,
         description: trainingData.description,
@@ -216,7 +216,7 @@ class TrainingController {
   async switchStatus({ request, response, auth }) {
     try {
       const user = await auth.getUser()
-      const training = await TrainingService.toggleStatus(request.params.id)
+      const training = await TrainingQuery.toggleStatus(request.params.id)
 
       if (training) {
         if (training['user_id'] == user.id) {
@@ -240,10 +240,10 @@ class TrainingController {
   async remove({ request, response, auth }) {
     try {
       const user = await auth.getUser()
-      const training = await TrainingService.getOne(request.params.id)
+      const training = await TrainingQuery.getOne(request.params.id)
       if (training) {
         if (training['user_id'] == user.id) {
-          await TrainingService.remove(training)
+          await TrainingQuery.remove(training)
           return response.status(HTTPStatus.OK).json(training)
         }
         return response.status(HTTPStatus.UNAUTHORIZED).json({ message: "You have no permissions to manage this Training." })

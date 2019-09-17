@@ -1,12 +1,12 @@
 'use strict'
 
 const HTTPStatus = require('http-status')
-const TrainingAdvancementLevelService = use('App/Services/TrainingAdvancementLevelService')
+const TrainingAdvancementLevelQuery = use('App/Queries/TrainingAdvancementLevelQuery')
 
 class TrainingAdvancementLevelController {
   async getAdvancementLevels({ request, response }) {
     try {
-      const levels = await TrainingAdvancementLevelService.getAll()
+      const levels = await TrainingAdvancementLevelQuery.getAll()
 
       return response.status(HTTPStatus.OK).json(levels)
     } catch(err) {

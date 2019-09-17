@@ -1,13 +1,13 @@
 'use strict'
 
 const HTTPStatus = require('http-status')
-const TrainingAdvancementLevelService = use('App/Services/TrainingAdvancementLevelService')
+const TrainingAdvancementLevelQuery = use('App/Queries/TrainingAdvancementLevelQuery')
 const { validate } = use('Validator')
 
 class TrainingAdvancementLevelController {
   async getAdvancementLevels({ request, response }) {
     try {
-      const levels = await TrainingAdvancementLevelService.getAll()
+      const levels = await TrainingAdvancementLevelQuery.getAll()
 
       return response.status(HTTPStatus.OK).json(levels)
     } catch(err) {
@@ -21,7 +21,7 @@ class TrainingAdvancementLevelController {
 
   async getAdvancementLevel({ request, response }) {
     try {
-      const level = await TrainingAdvancementLevelService.getOne(request.params.id)
+      const level = await TrainingAdvancementLevelQuery.getOne(request.params.id)
 
       if (level) {
         return response.status(HTTPStatus.OK).json(level)
@@ -53,7 +53,7 @@ class TrainingAdvancementLevelController {
         })
       }
 
-      const level = await TrainingAdvancementLevelService.create(inputData)
+      const level = await TrainingAdvancementLevelQuery.create(inputData)
 
       return response.status(HTTPStatus.CREATED).json(level)
     } catch(err) {
@@ -67,10 +67,10 @@ class TrainingAdvancementLevelController {
 
   async removeAdvancementLevel({ request, response }) {
     try {
-      const level = await TrainingAdvancementLevelService.getOne(request.params.id)
+      const level = await TrainingAdvancementLevelQuery.getOne(request.params.id)
 
       if (level) {
-        await TrainingAdvancementLevelService.remove(level)
+        await TrainingAdvancementLevelQuery.remove(level)
 
         return response.status(HTTPStatus.OK).json(level)
       }

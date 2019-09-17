@@ -1,7 +1,7 @@
 'use strict'
 
 const HTTPStatus = require('http-status')
-const ContactService = use('App/Services/ContactService')
+const ContactQuery = use('App/Queries/ContactQuery')
 const { validate } = use('Validator')
 
 class ContactController {
@@ -22,7 +22,7 @@ class ContactController {
         })
       }
 
-      await ContactService.create(inputData)
+      await ContactQuery.create(inputData)
 
       return response.status(HTTPStatus.CREATED).json({
         status: 'success',

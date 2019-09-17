@@ -2,8 +2,8 @@
 
 const Exercise = use('App/Models/Exercise')
 
-const ExerciseService = {
+const ExerciseQuery = {
 
 }
 
-module.exports = ExerciseService
+module.exports = ExerciseQuery

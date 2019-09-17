@@ -2,7 +2,7 @@
 
 const Training = use('App/Models/Training')
 
-const TrainingService = {
+const TrainingQuery = {
   async getAll() {
     const trainings = await Training
       .query()
@@ -93,4 +93,4 @@ const TrainingService = {
   }
 }
 
-module.exports = TrainingService
+module.exports = TrainingQuery

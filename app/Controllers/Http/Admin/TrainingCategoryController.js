@@ -1,13 +1,13 @@
 'use strict'
 
 const HTTPStatus = require('http-status')
-const TrainingCategoryService = use('App/Services/TrainingCategoryService')
+const TrainingCategoryQuery = use('App/Queries/TrainingCategoryQuery')
 const { validate } = use('Validator')
 
 class TrainingCategoryController {
   async getTrainingCategories({ request, response }) {
     try {
-      const categories = await TrainingCategoryService.getAll()
+      const categories = await TrainingCategoryQuery.getAll()
 
       return response.status(HTTPStatus.OK).json(categories)
     } catch(err) {
@@ -21,7 +21,7 @@ class TrainingCategoryController {
 
   async getTrainingCategory({ request, response }) {
     try {
-      const category = await TrainingCategoryService.getOne(request.params.id)
+      const category = await TrainingCategoryQuery.getOne(request.params.id)
 
       if (category) {
         return response.status(HTTPStatus.OK).json(category)
@@ -53,7 +53,7 @@ class TrainingCategoryController {
         })
       }
 
-      const category = await TrainingCategoryService.create(inputData)
+      const category = await TrainingCategoryQuery.create(inputData)
 
       return response.status(HTTPStatus.CREATED).json(category)
     } catch(err) {
@@ -67,10 +67,10 @@ class TrainingCategoryController {
 
   async removeTrainingCategory({ request, response }) {
     try {
-      const category = await TrainingCategoryService.getOne(request.params.id)
+      const category = await TrainingCategoryQuery.getOne(request.params.id)
 
       if (category) {
-        await TrainingCategoryService.remove(category)
+        await TrainingCategoryQuery.remove(category)
 
         return response.status(HTTPStatus.OK).json(category)
       }

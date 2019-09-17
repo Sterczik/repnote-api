@@ -1,12 +1,12 @@
 'use strict'
 
 const HTTPStatus = require('http-status')
-const UserService = use('App/Services/UserService')
+const UserQuery = use('App/Queries/UserQuery')
 
 class UserController {
   async getUsers({ request, response }) {
     try {
-      const users = await UserService.getAll()
+      const users = await UserQuery.getAll()
 
       return response.status(HTTPStatus.OK)
       .json({
@@ -24,7 +24,7 @@ class UserController {
 
   async getUser({ request, response }) {
     try {
-      const user = await UserService.getOne(request.params.id)
+      const user = await UserQuery.getOne(request.params.id)
 
       if (user) {
         return response.status(HTTPStatus.OK).json(user)

@@ -1,13 +1,13 @@
 'use strict'
 
 const HTTPStatus = require('http-status')
-const ExerciseCategoryService = use('App/Services/ExerciseCategoryService')
+const ExerciseCategoryQuery = use('App/Queries/ExerciseCategoryQuery')
 const { validate } = use('Validator')
 
 class ExerciseCategoryController {
   async getExerciseCategories({ request, response }) {
     try {
-      const categories = await ExerciseCategoryService.getAll()
+      const categories = await ExerciseCategoryQuery.getAll()
 
       return response.status(HTTPStatus.OK).json(categories)
     } catch(err) {
@@ -21,7 +21,7 @@ class ExerciseCategoryController {
 
   async getExerciseCategory({ request, response }) {
     try {
-      const category = await ExerciseCategoryService.getOne(request.params.id)
+      const category = await ExerciseCategoryQuery.getOne(request.params.id)
 
       if (category) {
         return response.status(HTTPStatus.OK).json(category)
@@ -53,7 +53,7 @@ class ExerciseCategoryController {
         })
       }
 
-      const category = await ExerciseCategoryService.create(inputData)
+      const category = await ExerciseCategoryQuery.create(inputData)
 
       return response.status(HTTPStatus.CREATED).json(category)
     } catch(err) {
@@ -67,10 +67,10 @@ class ExerciseCategoryController {
 
   async removeExerciseCategory({ request, response }) {
     try {
-      const category = await ExerciseCategoryService.getOne(request.params.id)
+      const category = await ExerciseCategoryQuery.getOne(request.params.id)
 
       if (category) {
-        await ExerciseCategoryService.remove(category)
+        await ExerciseCategoryQuery.remove(category)
 
         return response.status(HTTPStatus.OK).json(category)
       }
