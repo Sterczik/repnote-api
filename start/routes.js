@@ -45,7 +45,7 @@ Route.group(() => {
 // App Frontend with auth
 Route.group(() => {
   // Users
-  Route.get('users/profile', 'AccountController.getProfile')
+  Route.get('users/profile/user', 'AccountController.getProfile')
   Route.put('users/profile', 'AccountController.editProfile')
   Route.post('users/profile/avatar', 'AccountController.changeAvatar')
   Route.post('users/logout', 'UserController.logout')
