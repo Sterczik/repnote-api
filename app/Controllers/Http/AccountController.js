@@ -2,13 +2,15 @@
 
 const HTTPStatus = require('http-status')
 const User = use('App/Models/User')
-const Helpers = use('Helpers')
 const { validate } = use('Validator')
+const CloudinaryService = use('App/Services/CloudinaryService');
 
 class AccountController {
   async getProfile({ request, response, auth }) {
     try {
       const loggedUser = await auth.getUser()
+
+      console.log("1")
 
       const user = await User
         .query()
@@ -64,14 +66,21 @@ class AccountController {
   async changeAvatar({ request, response, auth }) {
     try {
       const loggedUser = await auth.getUser()
+      console.log(loggedUser.id)
+
       const photo = request.file('avatar')
-      await photo.move(Helpers.tmpPath('photos'), {
-        name: new Date().getTime() + '-' + loggedUser.id + '.' + photo.subtype,
-        overwrite: true
-      })
+
+      const cloudinaryResponse = await CloudinaryService.v2.uploader.upload(photo.tmpPath, { folder: 'repnote/avatars' });
+
+      console.log(cloudinaryResponse.secure_url)
+
+      const user = await User
+        .query()
+        .where('id', loggedUser.id)
+        .update({ avatar: cloudinaryResponse.secure_url })
 
       return response.status(HTTPStatus.OK)
-        .json({ success: true })
+        .json({ success: true, avatar: user.avatar })
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
