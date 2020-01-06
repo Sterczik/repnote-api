@@ -22,6 +22,7 @@ Route.group(() => {
   Route.post('users/register', 'UserController.register')
   Route.post('users/login', 'UserController.login')
   Route.post('users/authenticated/:provider', 'UserController.socialLoginCallback')
+  Route.post('users/refreshToken', 'UserController.refreshToken')
   Route.get('users/:name', 'AccountController.getUserProfile')
   Route.get('users/:name/trainings', 'AccountController.getUserTrainings')
 
