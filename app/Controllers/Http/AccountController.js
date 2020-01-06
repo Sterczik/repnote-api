@@ -1,8 +1,8 @@
 'use strict'
 
 const HTTPStatus = require('http-status')
-const User = use('App/Models/User')
 const { validate } = use('Validator')
+const AccountQuery = use('App/Queries/AccountQuery')
 const CloudinaryService = use('App/Services/CloudinaryService');
 
 class AccountController {
@@ -10,16 +10,10 @@ class AccountController {
     try {
       const loggedUser = await auth.getUser()
 
-      console.log("1")
-
-      const user = await User
-        .query()
-        .with('trainings')
-        .where('id', loggedUser.id)
-        .first()
+      const profile = await AccountQuery.getProfile(loggedUser.id)
 
       return response.status(HTTPStatus.OK)
-        .json(user)
+        .json(profile)
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
@@ -47,10 +41,7 @@ class AccountController {
 
       const profileData = request.only(['name', 'description'])
 
-      const updatedUser = await User
-        .query()
-        .where('id', loggedUser.id)
-        .update({ name: profileData.name, description: profileData.description })
+      const updatedUser = await AccountQuery.editProfile(loggedUser.id, profileData)
 
       return response.status(HTTPStatus.OK)
         .json(updatedUser)
@@ -66,18 +57,14 @@ class AccountController {
   async changeAvatar({ request, response, auth }) {
     try {
       const loggedUser = await auth.getUser()
-      console.log(loggedUser.id)
 
       const photo = request.file('avatar')
 
       const cloudinaryResponse = await CloudinaryService.v2.uploader.upload(photo.tmpPath, { folder: 'repnote/avatars' });
 
-      console.log(cloudinaryResponse.secure_url)
+      // console.log(cloudinaryResponse.secure_url)
 
-      const user = await User
-        .query()
-        .where('id', loggedUser.id)
-        .update({ avatar: cloudinaryResponse.secure_url })
+      const user = await AccountQuery.changeAvatar(loggedUser.id, cloudinaryResponse.secure_url)
 
       return response.status(HTTPStatus.OK)
         .json({ success: true, avatar: user.avatar })
@@ -92,16 +79,7 @@ class AccountController {
 
   async getUserProfile({ request, response }) {
     try {
-      const slug = request.params.name
-      const user = await User
-        .query()
-        .with('trainings', (builder) => {
-          builder.where('private', false)
-        })
-        .with('followers')
-        .with('following')
-        .where('slug', slug)
-        .first()
+      const user = await AccountQuery.getUserProfile(request.params.name)
 
       if (user) {
         return response.status(HTTPStatus.OK)
@@ -118,16 +96,47 @@ class AccountController {
 
   async getUserTrainings({ request, response }) {
     try {
-      const slug = request.params.name
-      const user = await User
-        .query()
-        .with('trainings', (builder) => {
-          builder.where('private', false)
-        })
-        .where('slug', slug)
-        .fetch()
+      const user = await AccountQuery.getUserTrainings(request.params.name)
 
       return response.status(HTTPStatus.OK).json(user.toJSON())
+    } catch(err) {
+      return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
+        status: 'error',
+        message: 'Something went wrong!'
+      })
+    }
+  }
+
+  async follow({ request, response, auth }) {
+    try {
+      const loggedUser = await auth.getUser()
+
+      await AccountQuery.followUser(loggedUser, request.params.id)
+
+      return response.status(HTTPStatus.OK)
+        .json({
+          success: true
+        })
+
+    } catch(err) {
+      return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
+        status: 'error',
+        message: 'Something went wrong!'
+      })
+    }
+  }
+
+  async unfollow({ request, response, auth }) {
+    try {
+      const loggedUser = await auth.getUser()
+
+      await AccountQuery.unfollowUser(loggedUser, request.params.id)
+
+      return response.status(HTTPStatus.OK)
+        .json({
+          success: true
+        })
+
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',

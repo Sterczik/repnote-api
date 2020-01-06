@@ -49,12 +49,16 @@ Route.group(() => {
   Route.put('users/profile', 'AccountController.editProfile')
   Route.post('users/profile/avatar', 'AccountController.changeAvatar')
   Route.post('users/logout', 'UserController.logout')
+  Route.post('users/follow/:id', 'UserController.follow')
+  Route.delete('users/follow/:id', 'UserController.unfollow')
 
   // Trainings
   Route.post('trainings', 'TrainingController.create')
   Route.put('trainings/:id', 'TrainingController.update')
   Route.put('trainings/:id/status', 'TrainingController.switchStatus')
   Route.delete('trainings/:id', 'TrainingController.remove')
+  Route.post('trainings/:id/like', 'TrainingLikeController.create')
+  Route.delete('trainings/:id/like', 'TrainingLikeController.remove')
 }).prefix('api/app').middleware(['auth:jwt'])
 
 // Admin Frontend
