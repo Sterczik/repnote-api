@@ -41,7 +41,8 @@ class AccountController {
 
       const profileData = request.only(['name', 'description'])
 
-      const updatedUser = await AccountQuery.editProfile(loggedUser.id, profileData)
+      await AccountQuery.editProfile(loggedUser.id, profileData)
+      const updatedUser = await AccountQuery.getProfile(loggedUser.id)
 
       return response.status(HTTPStatus.OK)
         .json(updatedUser)
@@ -62,9 +63,8 @@ class AccountController {
 
       const cloudinaryResponse = await CloudinaryService.v2.uploader.upload(photo.tmpPath, { folder: 'repnote/avatars' });
 
-      // console.log(cloudinaryResponse.secure_url)
-
-      const user = await AccountQuery.changeAvatar(loggedUser.id, cloudinaryResponse.secure_url)
+      await AccountQuery.changeAvatar(loggedUser.id, cloudinaryResponse.secure_url)
+      const user = await AccountQuery.getProfile(loggedUser.id)
 
       return response.status(HTTPStatus.OK)
         .json({ success: true, avatar: user.avatar })
