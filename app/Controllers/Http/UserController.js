@@ -27,12 +27,11 @@ class UserController {
         .first()
 
       if (!(authUser === null)) {
-        const userToken = await auth.generate(authUser)
+        const userToken = await auth.withRefreshToken().generate(authUser)
         return response.status(HTTPStatus.OK)
           .json({
             success: true,
             token: { ...userToken }
-            // userData: userData.getAccessToken(),
           })
       }
 
@@ -46,13 +45,12 @@ class UserController {
 
       await user.save()
 
-      const userToken = await auth.generate(user)
+      const userToken = await auth.withRefreshToken().generate(user)
 
       return response.status(HTTPStatus.CREATED)
         .json({
           success: true,
           token: { ...userToken }
-          // userData: userData.getAccessToken(),
         })
     } catch (e) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR)
@@ -96,19 +94,19 @@ class UserController {
 
       const data = {
         ...inputData,
-        avatar: 'empty',
+        avatar: Env.get('DEFAULT_AVATAR'),
         provider_id: '1',
-        provider: 'local'
+        provider: 'at'
       }
 
       await User.create(data)
 
-      await Mail.send('emails.welcome', user.toJSON(), (message) => {
-        message
-          .from('hello@sterczik.io')
-          .to(user.email)
-          .subject('Hello ✔')
-      })
+      // await Mail.send('emails.welcome', user.toJSON(), (message) => {
+      //   message
+      //     .from('hello@sterczik.io')
+      //     .to(user.email)
+      //     .subject('Hello ✔')
+      // })
 
       return response.status(HTTPStatus.CREATED)
         .json({

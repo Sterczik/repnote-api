@@ -70,7 +70,8 @@ const TrainingQuery = {
         name: data.name,
         private: data.private,
         description: data.description,
-        goal: data.goal
+        goal: data.goal,
+        days_per_week: data.days_per_week
       })
 
     return training
@@ -83,7 +84,8 @@ const TrainingQuery = {
         name: data.name,
         private: data.private,
         description: data.description,
-        goal: data.goal
+        goal: data.goal,
+        days_per_week: data.days_per_week
       })
 
     return training

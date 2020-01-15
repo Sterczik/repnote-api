@@ -4,6 +4,7 @@ const HTTPStatus = require('http-status')
 const { validate } = use('Validator')
 const TrainingQuery = use('App/Queries/TrainingQuery')
 const TrainingCategoryQuery = use('App/Queries/TrainingCategoryQuery')
+const TrainingAdvancementLevelQuery = use('App/Queries/TrainingAdvancementLevelQuery')
 
 const Exercise = use('App/Models/Exercise')
 const Round = use('App/Models/Round')
@@ -79,11 +80,18 @@ class TrainingController {
     try {
       const user = await auth.getUser()
 
-      const validation = await validate(request.only(['name', 'private', 'description', 'goal']), {
+      const validation = await validate(request.only([
+        'name',
+        'private',
+        'description',
+        'goal',
+        'days_per_week'
+      ]), {
         name: 'required|min:5|max:60|unique:trainings',
         private: 'required',
         description: 'required',
-        goal: 'required'
+        goal: 'required',
+        days_per_week: 'required'
       })
 
       if (validation.fails()) {
@@ -95,7 +103,16 @@ class TrainingController {
         })
       }
 
-      const trainingData = request.only(['name', 'private', 'description', 'goal', 'category', 'exercises'])
+      const trainingData = request.only([
+        'name',
+        'private',
+        'description',
+        'goal',
+        'days_per_week',
+        'category',
+        'advancementLevel',
+        'exercises'
+      ])
 
       if (trainingData.exercises.length > 10) {
         return response.status(HTTPStatus.BAD_REQUEST).json({
@@ -118,18 +135,24 @@ class TrainingController {
       })
 
       const category = await TrainingCategoryQuery.getOne(trainingData.category)
+      const advancementLevel = await TrainingAdvancementLevelQuery.getOne(trainingData.advancementLevel)
 
       const training = await TrainingQuery
         .create({
           name: trainingData.name,
           private: trainingData.private,
           description: trainingData.description,
-          goal: trainingData.goal
+          goal: trainingData.goal,
+          days_per_week: trainingData.days_per_week
         })
 
       await training
         .category()
         .associate(category)
+
+      await training
+        .advancementLevel()
+        .associate(advancementLevel)
 
       await training
         .user()
