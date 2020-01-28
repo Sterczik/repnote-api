@@ -17,7 +17,7 @@ const TrainingQuery = {
 
     return trainings
   },
-  async getAllWithPagination(page, perPage, search) {
+  async getAllWithPagination(page, perPage, search, sort, categoryFilter, advancementLevelFilter) {
     const trainings = await Training
       .query()
       .with('user')
@@ -29,7 +29,13 @@ const TrainingQuery = {
       .with('likes')
       .where('private', false)
       .where('name', 'like', search)
-      .orderBy('created_at', 'desc')
+      .optional(query => query
+        .where('category_id', categoryFilter)
+      )
+      .optional(query => query
+        .where('advancement_level_id', advancementLevelFilter)
+      )
+      .orderBy('created_at', sort)
       .paginate(page, perPage)
 
     return trainings

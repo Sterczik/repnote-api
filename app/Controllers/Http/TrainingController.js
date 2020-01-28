@@ -13,14 +13,33 @@ const ExerciseCategory = use('App/Models/ExerciseCategory')
 class TrainingController {
   async getAll({ request, response }) {
     try {
-      let { perPage, page, sort, search } = request.only(['perPage', 'page', 'sort', 'search'])
+      let { perPage, page, sort, search, categoryFilter, advancementLevelFilter } = request.only([
+        'perPage',
+        'page',
+        'sort',
+        'search',
+        'categoryFilter',
+        'advancementLevelFilter'
+      ])
 
       perPage = parseInt(perPage) || 24
       page = parseInt(page) || 1
-      sort = parseInt(sort) || 1
+      if (sort == '1') {
+        sort = 'desc'
+      } else {
+        sort = 'asc'
+      }
       search = `%${decodeURIComponent(search)}%` || ''
+      categoryFilter = parseInt(categoryFilter) || 0
+      if (!categoryFilter) {
+        categoryFilter = null
+      }
+      advancementLevelFilter = parseInt(advancementLevelFilter) || 0
+      if (!advancementLevelFilter) {
+        advancementLevelFilter = null
+      }
 
-      const trainingsInfo = await TrainingQuery.getAllWithPagination(page, perPage, search)
+      const trainingsInfo = await TrainingQuery.getAllWithPagination(page, perPage, search, sort, categoryFilter, advancementLevelFilter)
 
       return response.status(HTTPStatus.OK).json(trainingsInfo)
     } catch(err) {

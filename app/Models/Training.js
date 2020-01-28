@@ -4,6 +4,11 @@
 const Model = use('Model')
 
 class Training extends Model {
+  static boot() {
+    super.boot()
+
+    this.addTrait('@provider:Lucid/OptionalQueries')
+  }
   static formatDates (field, value) {
     if (field === 'dob') {
       return value.format('DD-MM-YYYY')

@@ -16,6 +16,16 @@ const UserQuery = {
       .first()
 
     return user
+  },
+  async changePassword(id, password) {
+    const user = await User
+      .query()
+      .where('id', id)
+      .update({
+        password
+      })
+
+    return user
   }
 }
 

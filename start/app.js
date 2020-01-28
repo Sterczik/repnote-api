@@ -20,7 +20,8 @@ const providers = [
   '@adonisjs/validator/providers/ValidatorProvider',
   '@adonisjs/mail/providers/MailProvider',
   '@adonisjs/framework/providers/ViewProvider',
-  '@adonisjs/lucid-slugify/providers/SlugifyProvider'
+  '@adonisjs/lucid-slugify/providers/SlugifyProvider',
+  'adonis-lucid-optional-queries/providers/OptionalQueriesProvider',
 ]
 
 /*
