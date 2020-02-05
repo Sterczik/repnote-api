@@ -23,6 +23,7 @@ Route.group(() => {
   Route.post('users/login', 'UserController.login')
   Route.post('users/authenticated/:provider', 'UserController.socialLoginCallback')
   Route.post('users/refreshToken', 'UserController.refreshToken')
+  Route.put('users/change-password', 'UserController.changePassword')
   Route.get('users/:name', 'AccountController.getUserProfile')
   Route.get('users/:name/trainings', 'AccountController.getUserTrainings')
 
@@ -50,8 +51,8 @@ Route.group(() => {
   Route.put('users/profile', 'AccountController.editProfile')
   Route.post('users/profile/avatar', 'AccountController.changeAvatar')
   Route.post('users/logout', 'UserController.logout')
-  Route.post('users/follow/:id', 'UserController.follow')
-  Route.delete('users/follow/:id', 'UserController.unfollow')
+  Route.post('users/:id/follow', 'AccountController.follow')
+  Route.delete('users/:id/follow', 'AccountController.unfollow')
 
   // Trainings
   Route.post('trainings', 'TrainingController.create')

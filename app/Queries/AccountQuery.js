@@ -59,8 +59,8 @@ const AccountQuery = {
 
     return
   },
-  async unfollowUser(user, userToFollow) {
-    await user.following().detach(userToFollow)
+  async unfollowUser(user, userToUnfollow) {
+    await user.following().detach(userToUnfollow)
 
     return
   }

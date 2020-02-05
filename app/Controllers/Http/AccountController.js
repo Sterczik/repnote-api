@@ -1,9 +1,10 @@
 'use strict'
 
+const Database = use('Database')
 const HTTPStatus = require('http-status')
 const { validate } = use('Validator')
 const AccountQuery = use('App/Queries/AccountQuery')
-const CloudinaryService = use('App/Services/CloudinaryService');
+const CloudinaryService = use('App/Services/CloudinaryService')
 
 class AccountController {
   async getProfile({ request, response, auth }) {
@@ -77,11 +78,27 @@ class AccountController {
     }
   }
 
-  async getUserProfile({ request, response }) {
+  async getUserProfile({ request, response, auth }) {
     try {
       const user = await AccountQuery.getUserProfile(request.params.name)
 
+      let loggedUser = null
+      let follow = null
+      try {
+        if (await auth.getUser()) {
+          loggedUser = await auth.getUser()
+
+          follow = await Database
+            .from('followers')
+            .where('user_id', user.id)
+            .where('follower_id', loggedUser.id)
+            .first()
+        } else {
+        }
+      } catch(e) {}
+
       if (user) {
+        user.followed = Boolean(follow)
         return response.status(HTTPStatus.OK)
           .json(user)
       }

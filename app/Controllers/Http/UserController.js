@@ -7,6 +7,7 @@ const Hash = use('Hash')
 const Mail = use('Mail')
 const Encryption = use('Encryption')
 const { validate } = use('Validator')
+const UserQuery = use('App/Queries/UserQuery')
 
 class UserController {
   async socialLoginCallback ({request, params, ally, auth, response}) {
@@ -172,6 +173,78 @@ class UserController {
         .json({
           success: true,
           token
+        })
+    } catch(err) {
+      return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
+        status: 'error',
+        message: 'Problem occured while trying to sigin. Please try again.'
+      })
+    }
+  }
+
+  async changePassword({request, response, auth}) {
+    try {
+      const data = request.only(['oldPassword', 'password', 'passwordConfirmation'])
+
+      const validation = await validate(request.only(['oldPassword', 'password', 'passwordConfirmation']), {
+        oldPassword: 'required|min:6|max:30',
+        password: 'required|min:6|max:30',
+        passwordConfirmation: 'required|min:6|max:30'
+      })
+      //|regex:/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/
+
+      if (validation.fails()) {
+        return response.status(HTTPStatus.BAD_REQUEST).json({
+          success: false,
+          errors: {
+            message: validation.messages()
+          }
+        })
+      }
+
+      const passwordConfirmationCheck = data.password === data.passwordConfirmation
+      if (!passwordConfirmationCheck) {
+        return response.status(HTTPStatus.BAD_REQUEST)
+          .json({
+            success: false,
+            errors: {
+              message: 'You passed wrong password confirmation'
+            }
+          })
+      }
+
+      const newPasswordCheck = data.oldPassword === data.password
+      if (newPasswordCheck) {
+        return response.status(HTTPStatus.BAD_REQUEST)
+          .json({
+            success: false,
+            errors: {
+              message: 'New password matches old password.'
+            }
+          })
+      }
+
+      const loggedUser = await auth.getUser()
+      const user = await UserQuery.getOne(loggedUser.id)
+
+      const oldPasswordCheck = await Hash.verify(data.oldPassword, user.password)
+      if (!oldPasswordCheck) {
+        return response.status(HTTPStatus.BAD_REQUEST)
+          .json({
+            success: false,
+            errors: {
+              message: 'You passed wrong old password.'
+            }
+          })
+      }
+
+      const hashedPassword = await Hash.make(data.password)
+
+      await UserQuery.changePassword(loggedUser.id, hashedPassword)
+
+      return response.status(HTTPStatus.OK)
+        .json({
+          success: true
         })
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({

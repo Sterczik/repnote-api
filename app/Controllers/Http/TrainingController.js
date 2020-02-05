@@ -5,6 +5,7 @@ const { validate } = use('Validator')
 const TrainingQuery = use('App/Queries/TrainingQuery')
 const TrainingCategoryQuery = use('App/Queries/TrainingCategoryQuery')
 const TrainingAdvancementLevelQuery = use('App/Queries/TrainingAdvancementLevelQuery')
+const TrainingLikeQuery = use('App/Queries/TrainingLikeQuery')
 
 const Exercise = use('App/Models/Exercise')
 const Round = use('App/Models/Round')
@@ -55,15 +56,18 @@ class TrainingController {
     try {
       const training = await TrainingQuery.getOne(request.params.id)
 
-      let user = ''
+      let user = null
+      let like = null
       try {
         if (await auth.getUser()) {
           user = await auth.getUser()
+          like = await TrainingLikeQuery.get(user.id, training.id)
         }
       } catch(e) {}
 
       if (training) {
         if (training.private === false) {
+          training.liked = Boolean(like)
           if (user) {
             if (training['user_id'] == user.id) {
               training.edit = true
