@@ -27,6 +27,7 @@ const TrainingQuery = {
       .with('exercises.category')
       .with('exercises.rounds')
       .with('likes')
+      .withCount('likes')
       .where('private', false)
       .where('name', 'like', search)
       .optional(query => query
@@ -35,7 +36,7 @@ const TrainingQuery = {
       .optional(query => query
         .where('advancement_level_id', advancementLevelFilter)
       )
-      .orderBy('created_at', sort)
+      .orderBy(sort, 'desc')
       .paginate(page, perPage)
 
     return trainings

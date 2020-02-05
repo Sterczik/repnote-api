@@ -26,9 +26,9 @@ class TrainingController {
       perPage = parseInt(perPage) || 24
       page = parseInt(page) || 1
       if (sort == '1') {
-        sort = 'desc'
+        sort = 'created_at'
       } else {
-        sort = 'asc'
+        sort = 'likes_count'
       }
       search = `%${decodeURIComponent(search)}%` || ''
       categoryFilter = parseInt(categoryFilter) || 0
