@@ -67,9 +67,11 @@ Route.group(() => {
 Route.group(() => {
   Route.get('users', 'Admin/UserController.getUsers')
   Route.get('users/:id', 'Admin/UserController.getUser')
+  Route.delete('users/:id', 'Admin/UserController.removeUser')
 
   Route.get('trainings', 'Admin/TrainingController.getTrainings')
   Route.get('trainings/:id', 'Admin/TrainingController.getTraining')
+  Route.delete('trainings/:id', 'Admin/TrainingController.remove')
 
   Route.get('trainingCategories', 'Admin/TrainingCategoryController.getTrainingCategories')
   Route.get('trainingCategories/:id', 'Admin/TrainingCategoryController.getTrainingCategory')

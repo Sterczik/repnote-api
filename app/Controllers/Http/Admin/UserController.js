@@ -38,6 +38,25 @@ class UserController {
       })
     }
   }
+
+  async removeUser({ request, response }) {
+    try {
+      const user = await UserQuery.getOne(request.params.id)
+
+      if (user) {
+        await UserQuery.remove(user)
+
+        return response.status(HTTPStatus.OK).json(user)
+      }
+      return response.status(HTTPStatus.NOT_FOUND).json(HTTPStatus.NOT_FOUND)
+    } catch(err) {
+      return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
+        status: 'error',
+        message: 'Something went wrong',
+        err
+      })
+    }
+  }
 }
 
 module.exports = UserController

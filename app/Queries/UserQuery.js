@@ -26,6 +26,9 @@ const UserQuery = {
       })
 
     return user
+  },
+  async remove(user) {
+    await user.delete()
   }
 }
 

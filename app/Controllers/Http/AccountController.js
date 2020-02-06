@@ -115,7 +115,7 @@ class AccountController {
     try {
       const user = await AccountQuery.getUserTrainings(request.params.name)
 
-      return response.status(HTTPStatus.OK).json(user.toJSON())
+      return response.status(HTTPStatus.OK).json(user)
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
