@@ -84,6 +84,8 @@ Route.group(() => {
   Route.delete('exerciseCategories/:id', 'Admin/ExerciseCategoryController.removeExerciseCategory')
 
   Route.get('contactMessages', 'Admin/ContactController.getMessages')
+  Route.get('contactMessages/:id', 'Admin/ContactController.getMessage')
+  Route.delete('contactMessages/:id', 'Admin/ContactController.removeMessage')
 }).prefix('api/admin')
 
 // Admin Frontend with auth
