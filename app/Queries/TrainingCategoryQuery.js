@@ -23,6 +23,14 @@ const TrainingCategoryQuery = {
 
     return category
   },
+  async edit(id, data) {
+    const updatedCategory = await TrainingCategory
+      .query()
+      .where('id', id)
+      .update({ name: data.name })
+
+    return updatedCategory
+  },
   async remove(category) {
     await category.delete()
   }

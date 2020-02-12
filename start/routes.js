@@ -76,11 +76,13 @@ Route.group(() => {
   Route.get('trainingCategories', 'Admin/TrainingCategoryController.getTrainingCategories')
   Route.get('trainingCategories/:id', 'Admin/TrainingCategoryController.getTrainingCategory')
   Route.post('trainingCategories', 'Admin/TrainingCategoryController.addTrainingCategory')
+  Route.put('trainingCategories/:id', 'Admin/TrainingCategoryController.editTrainingCategory')
   Route.delete('trainingCategories/:id', 'Admin/TrainingCategoryController.removeTrainingCategory')
 
   Route.get('exerciseCategories', 'Admin/ExerciseCategoryController.getExerciseCategories')
   Route.get('exerciseCategories/:id', 'Admin/ExerciseCategoryController.getExerciseCategory')
   Route.post('exerciseCategories', 'Admin/ExerciseCategoryController.addExerciseCategory')
+  Route.put('exerciseCategories/:id', 'Admin/ExerciseCategoryController.editExerciseCategory')
   Route.delete('exerciseCategories/:id', 'Admin/ExerciseCategoryController.removeExerciseCategory')
 
   Route.get('contactMessages', 'Admin/ContactController.getMessages')

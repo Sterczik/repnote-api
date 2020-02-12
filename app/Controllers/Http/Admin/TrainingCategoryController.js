@@ -65,6 +65,27 @@ class TrainingCategoryController {
     }
   }
 
+  async editTrainingCategory({ request, response }) {
+    try {
+      const data = request.only(['name'])
+
+      await TrainingCategoryQuery.edit(request.params.id, data)
+      const updatedCategory = await TrainingCategoryQuery.getOne(request.params.id)
+
+      if (updatedCategory) {
+        return response.status(HTTPStatus.OK)
+        .json(updatedCategory)
+      }
+      return response.status(HTTPStatus.NOT_FOUND).json(HTTPStatus.NOT_FOUND)
+    } catch(err) {
+      return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
+        status: 'error',
+        message: 'Something went wrong',
+        err
+      })
+    }
+  }
+
   async removeTrainingCategory({ request, response }) {
     try {
       const category = await TrainingCategoryQuery.getOne(request.params.id)
