@@ -86,6 +86,9 @@ Route.group(() => {
   Route.get('contactMessages', 'Admin/ContactController.getMessages')
   Route.get('contactMessages/:id', 'Admin/ContactController.getMessage')
   Route.delete('contactMessages/:id', 'Admin/ContactController.removeMessage')
+
+  Route.get('tokens', 'Admin/TokenController.getTokens')
+  Route.delete('tokens/:id', 'Admin/TokenController.removeToken')
 }).prefix('api/admin')
 
 // Admin Frontend with auth
