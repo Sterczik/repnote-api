@@ -50,6 +50,7 @@ Route.group(() => {
   Route.get('users/profile/user', 'AccountController.getProfile')
   Route.put('users/profile', 'AccountController.editProfile')
   Route.post('users/profile/avatar', 'AccountController.changeAvatar')
+  Route.put('users/profile/avatar/reset', 'AccountController.resetAvatar')
   Route.post('users/logout', 'UserController.logout')
   Route.post('users/:id/follow', 'AccountController.follow')
   Route.delete('users/:id/follow', 'AccountController.unfollow')

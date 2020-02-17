@@ -1,5 +1,8 @@
 'use strict'
 
+/** @type {import('@adonisjs/framework/src/Env')} */
+const Env = use('Env')
+
 /*
 |--------------------------------------------------------------------------
 | Factory
@@ -19,12 +22,12 @@ const Hash = use('Hash')
 Factory.blueprint('App/Models/User', async (faker) => {
   return {
     name: faker.first() + ' ' + faker.last(),
-    avatar: 'empty',
+    avatar: Env.get('DEFAULT_AVATAR', 'empty'),
     username: faker.username(),
     email: faker.email(),
     description: faker.paragraph(),
     provider_id: faker.pickone(['1', '2', '3']),
-    provider: faker.pickone(['local', 'facebook', 'google']),
+    provider: faker.pickone(['at', 'facebook', 'google']),
     password: await Hash.make(faker.password()),
     slug: faker.first() + '-' + faker.last()
   }
@@ -37,6 +40,7 @@ Factory.blueprint('App/Models/Training', (faker) => {
     private: faker.bool(),
     description: faker.sentence(),
     goal: faker.sentence(),
+    days_per_week: faker.integer({ min: 1, max: 7 }),
     category_id: faker.integer({ min: 1, max: 3 }),
     advancement_level_id: faker.integer({ min: 1, max: 3 })
   }

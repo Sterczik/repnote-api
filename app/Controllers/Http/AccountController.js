@@ -1,5 +1,6 @@
 'use strict'
 
+const Env = use('Env')
 const Database = use('Database')
 const HTTPStatus = require('http-status')
 const { validate } = use('Validator')
@@ -65,6 +66,24 @@ class AccountController {
       const cloudinaryResponse = await CloudinaryService.v2.uploader.upload(photo.tmpPath, { folder: 'repnote/avatars' });
 
       await AccountQuery.changeAvatar(loggedUser.id, cloudinaryResponse.secure_url)
+      const user = await AccountQuery.getProfile(loggedUser.id)
+
+      return response.status(HTTPStatus.OK)
+        .json({ success: true, avatar: user.avatar })
+    } catch(err) {
+      return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
+        status: 'error',
+        message: 'Something went wrong!',
+        err
+      })
+    }
+  }
+
+  async resetAvatar({ request, response, auth }) {
+    try {
+      const loggedUser = await auth.getUser()
+
+      await AccountQuery.changeAvatar(loggedUser.id, Env.get('DEFAULT_AVATAR', 'empty'))
       const user = await AccountQuery.getProfile(loggedUser.id)
 
       return response.status(HTTPStatus.OK)

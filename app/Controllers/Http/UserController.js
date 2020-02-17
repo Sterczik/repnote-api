@@ -1,16 +1,17 @@
 'use strict'
 
+const Env = use('Env')
 const HTTPStatus = require('http-status')
 const User = use('App/Models/User')
-const Token = use('App/Models/Token')
 const Hash = use('Hash')
 const Mail = use('Mail')
 const Encryption = use('Encryption')
 const { validate } = use('Validator')
 const UserQuery = use('App/Queries/UserQuery')
+const TokenQuery = use('App/Queries/TokenQuery')
 
 class UserController {
-  async socialLoginCallback ({request, params, ally, auth, response}) {
+  async socialLoginCallback ({ request, params, ally, auth, response }) {
     try {
       const provider = params.provider
       const bodyResponse = request.raw()
@@ -95,19 +96,19 @@ class UserController {
 
       const data = {
         ...inputData,
-        avatar: Env.get('DEFAULT_AVATAR'),
+        avatar: Env.get('DEFAULT_AVATAR', 'empty'),
         provider_id: '1',
         provider: 'at'
       }
 
-      await User.create(data)
+      const user = await User.create(data)
 
-      // await Mail.send('emails.welcome', user.toJSON(), (message) => {
-      //   message
-      //     .from('hello@sterczik.io')
-      //     .to(user.email)
-      //     .subject('Hello ✔')
-      // })
+      await Mail.send('emails.welcome', user.toJSON(), (message) => {
+        message
+          .from('hello@sterczik.io')
+          .to(user.email)
+          .subject('Welcome!')
+      })
 
       return response.status(HTTPStatus.CREATED)
         .json({
@@ -117,7 +118,8 @@ class UserController {
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
-        message: 'Problem occured while trying to signup. Please try again.'
+        message: 'Problem occured while trying to signup. Please try again.',
+        err
       })
     }
   }
@@ -259,7 +261,8 @@ class UserController {
       const { token } = request.only(['token'])
       const decryptedToken = Encryption.decrypt(token)
 
-      await Token.query().where('token', decryptedToken).delete()
+      const token = await TokenQuery.getDecryptedOne(decryptedToken)
+      await TokenQuery.remove(token)
 
       return response.status(HTTPStatus.OK)
         .json({
