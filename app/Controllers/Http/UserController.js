@@ -124,7 +124,7 @@ class UserController {
     }
   }
 
-  async login({request, response, auth}) {
+  async login({ request, response, auth }) {
     try {
       const data = request.only(['email', 'password'])
 
@@ -184,7 +184,7 @@ class UserController {
     }
   }
 
-  async changePassword({request, response, auth}) {
+  async changePassword({ request, response, auth }) {
     try {
       const data = request.only(['oldPassword', 'password', 'passwordConfirmation'])
 
@@ -256,7 +256,7 @@ class UserController {
     }
   }
 
-  async logout({request, response, auth}) {
+  async logout({ request, response, auth }) {
     try {
       const { token } = request.only(['token'])
       const decryptedToken = Encryption.decrypt(token)
@@ -276,7 +276,7 @@ class UserController {
     }
   }
 
-  async refreshToken({request, response, auth}) {
+  async refreshToken({ request, response, auth }) {
     try {
       const { refreshToken } = request.only(['refreshToken'])
 

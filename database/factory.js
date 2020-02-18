@@ -46,6 +46,13 @@ Factory.blueprint('App/Models/Training', (faker) => {
   }
 })
 
+// Subtraining
+Factory.blueprint('App/Models/Subtraining', (faker) => {
+  return {
+    name: faker.sentence()
+  }
+})
+
 // Exercise
 Factory.blueprint('App/Models/Exercise', (faker) => {
   return {

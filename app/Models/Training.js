@@ -22,8 +22,8 @@ class Training extends Model {
   category () {
     return this.belongsTo('App/Models/TrainingCategory', 'category_id', 'id')
   }
-  exercises () {
-    return this.hasMany('App/Models/Exercise', 'id', 'training_id')
+  subtrainings () {
+    return this.hasMany('App/Models/Subtraining', 'id', 'training_id')
   }
   likes () {
     return this.hasMany('App/Models/TrainingLike', 'id', 'training_id')

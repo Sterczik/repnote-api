@@ -5,11 +5,11 @@ const Model = use('Model')
 
 class Exercise extends Model {
   static get hidden () {
-    return ['training_id', 'created_at', 'updated_at']
+    return ['subtraining_id', 'created_at', 'updated_at']
   }
 
-  training () {
-    return this.belongsTo('App/Models/Training', 'training_id', 'id')
+  subtraining () {
+    return this.belongsTo('App/Models/Subtraining', 'subtraining_id', 'id')
   }
   category () {
     return this.belongsTo('App/Models/ExerciseCategory', 'category_id', 'id')

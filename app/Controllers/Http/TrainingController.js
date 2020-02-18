@@ -7,6 +7,7 @@ const TrainingCategoryQuery = use('App/Queries/TrainingCategoryQuery')
 const TrainingAdvancementLevelQuery = use('App/Queries/TrainingAdvancementLevelQuery')
 const TrainingLikeQuery = use('App/Queries/TrainingLikeQuery')
 
+const Subtraining = use('App/Models/Subtraining')
 const Exercise = use('App/Models/Exercise')
 const Round = use('App/Models/Round')
 const ExerciseCategory = use('App/Models/ExerciseCategory')
@@ -134,27 +135,37 @@ class TrainingController {
         'days_per_week',
         'category',
         'advancementLevel',
-        'exercises'
+        'subtrainings'
       ])
 
-      if (trainingData.exercises.length > 10) {
+      if (trainingData.subtrainings.length > 10) {
         return response.status(HTTPStatus.BAD_REQUEST).json({
           success: false,
           errors: {
-            message: "You have too many exercises in Training"
+            message: "You have too many subtrainings in Training"
           }
         })
       }
 
-      trainingData.exercises.forEach((exercise) => {
-        if (exercise.rounds.length > 20) {
+      trainingData.subtrainings.forEach((subtraining) => {
+        if (subtraining.exercises.length > 10) {
           return response.status(HTTPStatus.BAD_REQUEST).json({
             success: false,
             errors: {
-              message: "You have too many rounds in exercises"
+              message: "You have too many exercises in Training"
             }
           })
         }
+        subtraining.exercises.forEach((exercise) => {
+          if (exercise.rounds.length > 20) {
+            return response.status(HTTPStatus.BAD_REQUEST).json({
+              success: false,
+              errors: {
+                message: "You have too many rounds in exercises"
+              }
+            })
+          }
+        })
       })
 
       const category = await TrainingCategoryQuery.getOne(trainingData.category)
@@ -181,27 +192,37 @@ class TrainingController {
         .user()
         .associate(user)
 
-      trainingData.exercises.forEach(async (exercise) => {
-        const exerciseContainer = await Exercise.create({
-          name: exercise.name
+      trainingData.subtrainings.forEach(async (subtraining) => {
+        const subtrainingContainer = await Subtraining.create({
+          name: subtraining.name
         })
 
-        const exerciseCategory = await ExerciseCategory
-          .query()
-          .where('id', exercise.category)
-          .first()
-
-        await exerciseContainer
-          .category()
-          .associate(exerciseCategory)
-
-        await exerciseContainer
+        await subtrainingContainer
           .training()
           .associate(training)
 
-        await exerciseContainer
-          .rounds()
-          .createMany(exercise.rounds)
+        subtraining.exercises.forEach(async (exercise) => {
+          const exerciseContainer = await Exercise.create({
+            name: exercise.name
+          })
+
+          const exerciseCategory = await ExerciseCategory
+            .query()
+            .where('id', exercise.category)
+            .first()
+
+          await exerciseContainer
+            .category()
+            .associate(exerciseCategory)
+
+          await exerciseContainer
+            .subtraining()
+            .associate(subtrainingContainer)
+
+          await exerciseContainer
+            .rounds()
+            .createMany(exercise.rounds)
+        })
       })
 
       await training.save()
