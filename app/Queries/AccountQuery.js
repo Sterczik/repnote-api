@@ -48,17 +48,6 @@ const AccountQuery = {
 
     return profile
   },
-  async getUserTrainings(slug) {
-    const profile = await User
-      .query()
-      .with('trainings', (builder) => {
-        builder.where('private', false)
-      })
-      .where('slug', slug)
-      .fetch()
-
-    return profile
-  },
   async editProfile(id, data) {
     const updatedUser = await User
       .query()

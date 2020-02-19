@@ -25,7 +25,6 @@ Route.group(() => {
   Route.post('users/refreshToken', 'UserController.refreshToken')
   Route.put('users/change-password', 'UserController.changePassword')
   Route.get('users/:name', 'AccountController.getUserProfile')
-  Route.get('users/:name/trainings', 'AccountController.getUserTrainings')
 
   // Trainings
   Route.get('trainings', 'TrainingController.getAll')

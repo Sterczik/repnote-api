@@ -62,7 +62,7 @@ class UserController {
     }
   }
 
-  async register({ request, response, auth }) {
+  async register({ request, response }) {
     try {
       const inputData = request.only(['name', 'email', 'password'])
       const userExists = await User.findBy('email', inputData.email)

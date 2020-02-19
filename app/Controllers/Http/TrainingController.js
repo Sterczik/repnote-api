@@ -208,7 +208,7 @@ class TrainingController {
 
           const exerciseCategory = await ExerciseCategory
             .query()
-            .where('id', exercise.category)
+            .where('id', exercise.category_id)
             .first()
 
           await exerciseContainer
@@ -245,11 +245,18 @@ class TrainingController {
 
   async update({ request, response, auth }) {
     try {
-      const validation = await validate(request.only(['name', 'private', 'description', 'goal']), {
-        name: 'required|min:5|max:60|unique:trainings',
+      const validation = await validate(request.only([
+        'name',
+        'private',
+        'description',
+        'goal',
+        'days_per_week'
+      ]), {
+        name: 'required|min:5|max:60',
         private: 'required',
         description: 'required',
-        goal: 'required'
+        goal: 'required',
+        days_per_week: 'required'
       })
 
       if (validation.fails()) {
@@ -261,16 +268,113 @@ class TrainingController {
         })
       }
 
-      const trainingData = request.only(['name', 'private', 'description', 'goal'])
+      const trainingData = request.only([
+        'name',
+        'private',
+        'description',
+        'goal',
+        'days_per_week',
+        'category',
+        'advancementLevel',
+        'subtrainings'
+      ])
 
-      const training = await TrainingQuery.update(request.params.id, {
-        name: trainingData.name,
-        private: trainingData.private,
-        description: trainingData.description,
-        goal: trainingData.goal
+      if (trainingData.subtrainings.length > 10) {
+        return response.status(HTTPStatus.BAD_REQUEST).json({
+          success: false,
+          errors: {
+            message: "You have too many subtrainings in Training"
+          }
+        })
+      }
+
+      trainingData.subtrainings.forEach((subtraining) => {
+        if (subtraining.exercises.length > 10) {
+          return response.status(HTTPStatus.BAD_REQUEST).json({
+            success: false,
+            errors: {
+              message: "You have too many exercises in Training"
+            }
+          })
+        }
+        subtraining.exercises.forEach((exercise) => {
+          if (exercise.rounds.length > 20) {
+            return response.status(HTTPStatus.BAD_REQUEST).json({
+              success: false,
+              errors: {
+                message: "You have too many rounds in exercises"
+              }
+            })
+          }
+        })
       })
 
-      return response.status(HTTPStatus.OK).json(training)
+      const category = await TrainingCategoryQuery.getOne(trainingData.category)
+      const advancementLevel = await TrainingAdvancementLevelQuery.getOne(trainingData.advancementLevel)
+
+      await TrainingQuery
+        .update(request.params.id, {
+          name: trainingData.name,
+          private: trainingData.private,
+          description: trainingData.description,
+          goal: trainingData.goal,
+          days_per_week: trainingData.days_per_week
+        })
+
+      const training = await TrainingQuery.getOne(request.params.id)
+
+      await training
+        .category()
+        .associate(category)
+
+      await training
+        .advancementLevel()
+        .associate(advancementLevel)
+
+      await training.subtrainings().delete()
+
+      trainingData.subtrainings.forEach(async (subtraining) => {
+        const subtrainingContainer = await Subtraining.create({
+          name: subtraining.name
+        })
+
+        await subtrainingContainer
+          .training()
+          .associate(training)
+
+        subtraining.exercises.forEach(async (exercise) => {
+          const exerciseContainer = await Exercise.create({
+            name: exercise.name
+          })
+
+          const exerciseCategory = await ExerciseCategory
+            .query()
+            .where('id', exercise.category_id)
+            .first()
+
+          await exerciseContainer
+            .category()
+            .associate(exerciseCategory)
+
+          await exerciseContainer
+            .subtraining()
+            .associate(subtrainingContainer)
+
+          await exerciseContainer
+            .rounds()
+            .createMany(exercise.rounds)
+        })
+      })
+
+      await training.save()
+
+      // Training is saved, now it's time to retrieve it from database with all information
+
+      const trainingToFind = await TrainingQuery.getOne(training.id)
+
+      if (trainingToFind) {
+        return response.status(HTTPStatus.OK).json(trainingToFind)
+      }
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',

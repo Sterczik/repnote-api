@@ -130,19 +130,6 @@ class AccountController {
     }
   }
 
-  async getUserTrainings({ request, response }) {
-    try {
-      const user = await AccountQuery.getUserTrainings(request.params.name)
-
-      return response.status(HTTPStatus.OK).json(user)
-    } catch(err) {
-      return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
-        status: 'error',
-        message: 'Something went wrong!'
-      })
-    }
-  }
-
   async follow({ request, response, auth }) {
     try {
       const loggedUser = await auth.getUser()
