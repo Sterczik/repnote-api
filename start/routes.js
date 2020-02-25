@@ -61,10 +61,17 @@ Route.group(() => {
   Route.delete('trainings/:id', 'TrainingController.remove')
   Route.post('trainings/:id/like', 'TrainingLikeController.create')
   Route.delete('trainings/:id/like', 'TrainingLikeController.remove')
-}).prefix('api/app').middleware(['auth:jwt'])
+}).prefix('api/app').middleware('auth:user')
 
 // Admin Frontend
 Route.group(() => {
+  Route.post('admins/login', 'Admin/AdminController.login')
+}).prefix('api/admin')
+
+// Admin Frontend with auth
+Route.group(() => {
+  Route.post('admins/logout', 'Admin/AdminController.logout')
+
   Route.get('users', 'Admin/UserController.getUsers')
   Route.get('users/:id', 'Admin/UserController.getUser')
   Route.delete('users/:id', 'Admin/UserController.removeUser')
@@ -91,6 +98,4 @@ Route.group(() => {
 
   Route.get('tokens', 'Admin/TokenController.getTokens')
   Route.delete('tokens/:id', 'Admin/TokenController.removeToken')
-}).prefix('api/admin')
-
-// Admin Frontend with auth
+}).prefix('api/admin').middleware('auth:admin')

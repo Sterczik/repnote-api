@@ -5,7 +5,9 @@ const Token = use('App/Models/Token')
 const TokenQuery = {
   async getAll() {
     const tokens = await Token
-      .all()
+      .query()
+      .with('user')
+      .fetch()
 
     return tokens
   },
@@ -17,10 +19,10 @@ const TokenQuery = {
 
     return token
   },
-  async getDecryptedOne(token) {
+  async getDecryptedOne(decryptedToken) {
     const token = await Token
       .query()
-      .where('token', token)
+      .where('token', decryptedToken)
       .first()
 
     return token

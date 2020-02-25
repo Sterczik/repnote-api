@@ -256,13 +256,13 @@ class UserController {
     }
   }
 
-  async logout({ request, response, auth }) {
+  async logout({ request, response }) {
     try {
       const { token } = request.only(['token'])
       const decryptedToken = Encryption.decrypt(token)
 
-      const token = await TokenQuery.getDecryptedOne(decryptedToken)
-      await TokenQuery.remove(token)
+      const tokenToRemove = await TokenQuery.getDecryptedOne(decryptedToken)
+      await TokenQuery.remove(tokenToRemove)
 
       return response.status(HTTPStatus.OK)
         .json({
