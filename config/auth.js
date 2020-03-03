@@ -35,7 +35,7 @@ module.exports = {
     password: 'password',
     options: {
       secret: `${Env.get('APP_KEY')}-user`,
-      expiresIn: '36000000'
+      expiresIn: '36000'
     }
   },
 
@@ -56,7 +56,7 @@ module.exports = {
     password: 'password',
     options: {
       secret: `${Env.get('APP_KEY')}-admin`,
-      expiresIn: '36000000'
+      expiresIn: '36000'
     }
   },
 

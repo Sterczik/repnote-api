@@ -88,6 +88,28 @@ class AdminController {
       })
     }
   }
+
+  async refreshToken({ request, response, auth }) {
+    try {
+      const { refreshToken } = request.only(['refreshToken'])
+
+      const refreshedToken = await auth
+        .authenticator('admin')
+        .generateForRefreshToken(refreshToken)
+
+      return response.status(HTTPStatus.OK)
+        .json({
+          success: true,
+          token: refreshedToken
+        })
+    } catch(err) {
+      return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
+        status: 'error',
+        message: 'Problem occured. Please try again.',
+        err
+      })
+    }
+  }
 }
 
 module.exports = AdminController

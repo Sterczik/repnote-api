@@ -66,6 +66,7 @@ Route.group(() => {
 // Admin Frontend
 Route.group(() => {
   Route.post('admins/login', 'Admin/AdminController.login')
+  Route.post('admins/refreshToken', 'Admin/AdminController.refreshToken')
 }).prefix('api/admin')
 
 // Admin Frontend with auth

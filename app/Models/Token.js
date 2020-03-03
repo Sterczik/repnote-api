@@ -7,6 +7,9 @@ class Token extends Model {
   user () {
     return this.belongsTo('App/Models/User')
   }
+  admin () {
+    return this.belongsTo('App/Models/Admin')
+  }
 }
 
 module.exports = Token
