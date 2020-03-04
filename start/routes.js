@@ -58,6 +58,7 @@ Route.group(() => {
   Route.post('trainings', 'TrainingController.create')
   Route.put('trainings/:id', 'TrainingController.update')
   Route.put('trainings/:id/status', 'TrainingController.switchStatus')
+  Route.post('trainings/:id/clone', 'TrainingController.clone')
   Route.delete('trainings/:id', 'TrainingController.remove')
   Route.post('trainings/:id/like', 'TrainingLikeController.create')
   Route.delete('trainings/:id/like', 'TrainingLikeController.remove')

@@ -71,18 +71,18 @@ class TrainingController {
           training.liked = Boolean(like)
           if (user) {
             if (training['user_id'] == user.id) {
-              training.edit = true
+              training.isOwner = true
               return response.status(HTTPStatus.OK).json(training)
             }
-            training.edit = false
+            training.isOwner = false
             return response.status(HTTPStatus.OK).json(training)
           }
-          training.edit = false
+          training.isOwner = false
           return response.status(HTTPStatus.OK).json(training)
         } else {
           if (user) {
             if (training['user_id'] == user.id) {
-              training.edit = true
+              training.isOwner = true
               return response.status(HTTPStatus.OK).json(training)
             }
             return response.status(HTTPStatus.UNAUTHORIZED).json({ message: "You have no permissions to manage this Training." })
@@ -418,6 +418,101 @@ class TrainingController {
           return response.status(HTTPStatus.OK).json(training)
         }
         return response.status(HTTPStatus.UNAUTHORIZED).json({ message: "You have no permissions to manage this Training." })
+      }
+      return response.status(HTTPStatus.NOT_FOUND).json({ message: "Not found." })
+    } catch(err) {
+      return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
+        status: 'error',
+        message: 'Something went wrong',
+        err
+      })
+    }
+  }
+
+  async clone({ request, response, auth }) {
+    try {
+      const user = await auth.getUser()
+      const trainingToClone = await TrainingQuery.getOne(request.params.id)
+
+      if (trainingToClone) {
+        if (trainingToClone['user_id'] != user.id) {
+          const trainingToCloneJSON = await trainingToClone.toJSON()
+
+          const category = await TrainingCategoryQuery.getOne(trainingToCloneJSON.category.id)
+          const advancementLevel = await TrainingAdvancementLevelQuery.getOne(trainingToCloneJSON.advancementLevel.id)
+
+          const clonedTraining = await TrainingQuery
+            .create({
+              name: trainingToCloneJSON.name,
+              private: true,
+              description: trainingToCloneJSON.description,
+              goal: trainingToCloneJSON.goal,
+              days_per_week: trainingToCloneJSON.days_per_week
+            })
+
+          await clonedTraining
+            .category()
+            .associate(category)
+
+          await clonedTraining
+            .advancementLevel()
+            .associate(advancementLevel)
+
+          await clonedTraining
+            .user()
+            .associate(user)
+
+          trainingToCloneJSON.subtrainings.forEach(async (subtraining) => {
+            const subtrainingContainer = await Subtraining.create({
+              name: subtraining.name
+            })
+
+            await subtrainingContainer
+              .training()
+              .associate(clonedTraining)
+
+            subtraining.exercises.forEach(async (exercise) => {
+              const exerciseContainer = await Exercise.create({
+                name: exercise.name
+              })
+
+              const exerciseCategory = await ExerciseCategory
+                .query()
+                .where('id', exercise.category_id)
+                .first()
+
+              await exerciseContainer
+                .category()
+                .associate(exerciseCategory)
+
+              await exerciseContainer
+                .subtraining()
+                .associate(subtrainingContainer)
+
+              const mappedRounds = exercise.rounds.map((round) => {
+                return {
+                  reps: round.reps,
+                  weight: round.weight
+                }
+              })
+
+              await exerciseContainer
+                .rounds()
+                .createMany(mappedRounds)
+            })
+          })
+
+          await clonedTraining.save()
+
+          // Training is saved, now it's time to retrieve it from database with all information
+
+          const trainingToFind = await TrainingQuery.getOne(clonedTraining.id)
+
+          if (trainingToFind) {
+            return response.status(HTTPStatus.OK).json(trainingToFind)
+          }
+        }
+        return response.status(HTTPStatus.UNAUTHORIZED).json({ message: "You have no permissions." })
       }
       return response.status(HTTPStatus.NOT_FOUND).json({ message: "Not found." })
     } catch(err) {
