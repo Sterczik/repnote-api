@@ -5,7 +5,6 @@ const Admin = use('App/Models/Admin')
 const Hash = use('Hash')
 const Encryption = use('Encryption')
 const { validate } = use('Validator')
-const AdminQuery = use('App/Queries/AdminQuery')
 const TokenQuery = use('App/Queries/TokenQuery')
 
 class AdminController {
@@ -84,7 +83,7 @@ class AdminController {
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
-        message: 'Problem occured while trying to signout. Please try again.'
+        message: 'Problem occured while trying to logout. Please try again.'
       })
     }
   }
@@ -105,8 +104,7 @@ class AdminController {
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
-        message: 'Problem occured. Please try again.',
-        err
+        message: 'Problem occured. Please try again.'
       })
     }
   }

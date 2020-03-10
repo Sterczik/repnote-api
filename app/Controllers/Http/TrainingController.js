@@ -9,7 +9,6 @@ const TrainingLikeQuery = use('App/Queries/TrainingLikeQuery')
 
 const Subtraining = use('App/Models/Subtraining')
 const Exercise = use('App/Models/Exercise')
-const Round = use('App/Models/Round')
 const ExerciseCategory = use('App/Models/ExerciseCategory')
 
 class TrainingController {

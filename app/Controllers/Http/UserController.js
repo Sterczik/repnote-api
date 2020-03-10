@@ -6,7 +6,7 @@ const User = use('App/Models/User')
 const Hash = use('Hash')
 const Mail = use('Mail')
 const Encryption = use('Encryption')
-const { validate } = use('Validator')
+const { validate, rule } = use('Validator')
 const UserQuery = use('App/Queries/UserQuery')
 const TokenQuery = use('App/Queries/TokenQuery')
 
@@ -81,9 +81,17 @@ class UserController {
       const validation = await validate(request.only(['name', 'email', 'password', 'password_confirmation']), {
         email: 'required|email|unique:users',
         name: 'required|min:3|max:30|unique:users',
-        password: 'required|confirmed|min:6|max:30'
+        password: [
+          rule('required'),
+          rule('confirmed'),
+          rule('min', 6),
+          rule('max', 30),
+          rule(
+            'regex',
+            /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])/
+          )
+        ]
       })
-      //|regex:/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/
 
       if (validation.fails()) {
         return response.status(HTTPStatus.BAD_REQUEST).json({
@@ -132,7 +140,6 @@ class UserController {
         email: 'required|email',
         password: 'required|min:6|max:30'
       })
-      //|regex:/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/
 
       if (validation.fails()) {
         return response.status(HTTPStatus.BAD_REQUEST).json({
@@ -186,14 +193,21 @@ class UserController {
 
   async changePassword({ request, response, auth }) {
     try {
-      const data = request.only(['oldPassword', 'password', 'passwordConfirmation'])
+      const data = request.only(['oldPassword', 'password'])
 
-      const validation = await validate(request.only(['oldPassword', 'password', 'passwordConfirmation']), {
+      const validation = await validate(request.only(['oldPassword', 'password', 'password_confirmation']), {
         oldPassword: 'required|min:6|max:30',
-        password: 'required|min:6|max:30',
-        passwordConfirmation: 'required|min:6|max:30'
+        password: [
+          rule('required'),
+          rule('confirmed'),
+          rule('min', 6),
+          rule('max', 30),
+          rule(
+            'regex',
+            /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])/
+          )
+        ]
       })
-      //|regex:/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/
 
       if (validation.fails()) {
         return response.status(HTTPStatus.BAD_REQUEST).json({
@@ -202,17 +216,6 @@ class UserController {
             message: validation.messages()
           }
         })
-      }
-
-      const passwordConfirmationCheck = data.password === data.passwordConfirmation
-      if (!passwordConfirmationCheck) {
-        return response.status(HTTPStatus.BAD_REQUEST)
-          .json({
-            success: false,
-            errors: {
-              message: 'You passed wrong password confirmation'
-            }
-          })
       }
 
       const newPasswordCheck = data.oldPassword === data.password
@@ -251,7 +254,7 @@ class UserController {
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
-        message: 'Problem occured while trying to sigin. Please try again.'
+        message: 'Problem occured while trying to change password.'
       })
     }
   }
