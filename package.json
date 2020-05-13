@@ -5,8 +5,9 @@
   "description": "RepNote REST API Server",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "test": "node ace test"
+    "test": "node ace test",
+    "start": "ENV_SILENT=true node server.js",
+    "migrate": "ENV_SILENT=true node ace migration:run --force"
   },
   "keywords": [
     "adonisjs",

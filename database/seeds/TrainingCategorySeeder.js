@@ -21,6 +21,8 @@ class TrainingCategorySeeder {
 
     await TrainingCategory.create({ name: 'Gym' })
     await TrainingCategory.create({ name: 'Calisthenics' })
+    await TrainingCategory.create({ name: 'Fitness' })
+    await TrainingCategory.create({ name: 'Sports' })
     await TrainingCategory.create({ name: 'Mixed' })
 
     Database.close()

@@ -21,9 +21,13 @@ class ExerciseCategorySeeder {
 
     await ExerciseCategory.create({ name: 'Chest' })
     await ExerciseCategory.create({ name: 'Shoulders' })
-    await ExerciseCategory.create({ name: 'Biceps' })
     await ExerciseCategory.create({ name: 'Triceps' })
+    await ExerciseCategory.create({ name: 'Forearms' })
+    await ExerciseCategory.create({ name: 'Back' })
+    await ExerciseCategory.create({ name: 'Stomach' })
+    await ExerciseCategory.create({ name: 'Biceps' })
     await ExerciseCategory.create({ name: 'Legs' })
+    await ExerciseCategory.create({ name: 'Buttocks' })
 
     Database.close()
   }
