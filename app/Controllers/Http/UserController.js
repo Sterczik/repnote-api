@@ -4,7 +4,6 @@ const Env = use('Env')
 const HTTPStatus = require('http-status')
 const User = use('App/Models/User')
 const Hash = use('Hash')
-const Mail = use('Mail')
 const Encryption = use('Encryption')
 const { validate, rule } = use('Validator')
 const UserQuery = use('App/Queries/UserQuery')
@@ -109,14 +108,7 @@ class UserController {
         provider: 'at'
       }
 
-      const user = await User.create(data)
-
-      await Mail.send('emails.welcome', user.toJSON(), (message) => {
-        message
-          .from('hello@sterczik.io')
-          .to(user.email)
-          .subject('Welcome!')
-      })
+      await User.create(data)
 
       return response.status(HTTPStatus.CREATED)
         .json({
