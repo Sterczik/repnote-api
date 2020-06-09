@@ -73,6 +73,7 @@ Route.group(() => {
 // Admin Frontend with auth
 Route.group(() => {
   Route.post('admins/logout', 'Admin/AdminController.logout')
+  Route.put('admins/change-password', 'Admin/AdminController.changePassword')
 
   Route.get('users', 'Admin/UserController.getUsers')
   Route.get('users/:id', 'Admin/UserController.getUser')

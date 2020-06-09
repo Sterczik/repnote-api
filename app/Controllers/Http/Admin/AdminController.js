@@ -4,7 +4,8 @@ const HTTPStatus = require('http-status')
 const Admin = use('App/Models/Admin')
 const Hash = use('Hash')
 const Encryption = use('Encryption')
-const { validate } = use('Validator')
+const { validate, rule } = use('Validator')
+const AdminQuery = use('App/Queries/AdminQuery')
 const TokenQuery = use('App/Queries/TokenQuery')
 
 class AdminController {
@@ -26,9 +27,9 @@ class AdminController {
         })
       }
 
-      const userExists = await Admin.findBy('email', data.email)
+      const adminExists = await Admin.findBy('email', data.email)
 
-      if (!userExists) {
+      if (!adminExists) {
         return response.status(HTTPStatus.BAD_REQUEST)
           .json({
             success: false,
@@ -38,7 +39,7 @@ class AdminController {
           })
       }
 
-      const passwordCheck = await Hash.verify(data.password, userExists.password)
+      const passwordCheck = await Hash.verify(data.password, adminExists.password)
 
       if (!passwordCheck) {
         return response.status(HTTPStatus.BAD_REQUEST)
@@ -105,6 +106,76 @@ class AdminController {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
         message: 'Problem occured. Please try again.'
+      })
+    }
+  }
+
+  async changePassword({ request, response, auth }) {
+    try {
+      const data = request.only(['oldPassword', 'password'])
+
+      const validation = await validate(request.only(['oldPassword', 'password', 'password_confirmation']), {
+        oldPassword: 'required|min:6|max:30',
+        password: [
+          rule('required'),
+          rule('confirmed'),
+          rule('min', 6),
+          rule('max', 30),
+          rule(
+            'regex',
+            /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])/
+          )
+        ]
+      })
+
+      if (validation.fails()) {
+        return response.status(HTTPStatus.BAD_REQUEST).json({
+          success: false,
+          errors: {
+            message: 'Validation error.'
+          }
+        })
+      }
+
+      const newPasswordCheck = data.oldPassword === data.password
+      if (newPasswordCheck) {
+        return response.status(HTTPStatus.BAD_REQUEST)
+          .json({
+            success: false,
+            errors: {
+              message: 'New password matches old password.'
+            }
+          })
+      }
+
+      const loggedAdmin = await auth.authenticator('admin').getUser()
+      const user = await AdminQuery.getOne(loggedAdmin.id)
+
+      const oldPasswordCheck = await Hash.verify(data.oldPassword, user.password)
+      if (!oldPasswordCheck) {
+        return response.status(HTTPStatus.BAD_REQUEST)
+          .json({
+            success: false,
+            errors: {
+              message: 'You passed wrong old password.'
+            }
+          })
+      }
+
+      const hashedPassword = await Hash.make(data.password)
+
+      await AdminQuery.changePassword(loggedAdmin.id, hashedPassword)
+
+      return response.status(HTTPStatus.OK)
+        .json({
+          success: true
+        })
+    } catch(err) {
+      return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        errors: {
+          message: 'Problem occured while trying to change password.'
+        }
       })
     }
   }
