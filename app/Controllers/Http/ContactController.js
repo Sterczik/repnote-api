@@ -17,8 +17,10 @@ class ContactController {
 
       if (validation.fails()) {
         return response.status(HTTPStatus.BAD_REQUEST).json({
-          status: 'error',
-          message: validation.messages()
+          success: false,
+          errors: {
+            message: 'Validation error.'
+          }
         })
       }
 
@@ -31,7 +33,7 @@ class ContactController {
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
-        message: 'Something went wrong!'
+        message: 'Something went wrong'
       })
     }
   }

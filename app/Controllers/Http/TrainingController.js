@@ -84,9 +84,9 @@ class TrainingController {
               training.isOwner = true
               return response.status(HTTPStatus.OK).json(training)
             }
-            return response.status(HTTPStatus.UNAUTHORIZED).json({ message: "You have no permissions to manage this Training." })
+            return response.status(HTTPStatus.UNAUTHORIZED).json({ message: 'You have no permissions to manage this Training.' })
           }
-          return response.status(HTTPStatus.UNAUTHORIZED).json({ message: "You have no permissions to manage this Training." })
+          return response.status(HTTPStatus.UNAUTHORIZED).json({ message: 'You have no permissions to manage this Training.' })
         }
       }
       return response.status(HTTPStatus.NOT_FOUND).json(HTTPStatus.NOT_FOUND)
@@ -121,7 +121,7 @@ class TrainingController {
         return response.status(HTTPStatus.BAD_REQUEST).json({
           success: false,
           errors: {
-            message: validation.messages()
+            message: 'Validation error.'
           }
         })
       }
@@ -141,7 +141,7 @@ class TrainingController {
         return response.status(HTTPStatus.BAD_REQUEST).json({
           success: false,
           errors: {
-            message: "You have too many subtrainings in Training"
+            message: 'You have too many subtrainings in Training'
           }
         })
       }
@@ -151,7 +151,7 @@ class TrainingController {
           return response.status(HTTPStatus.BAD_REQUEST).json({
             success: false,
             errors: {
-              message: "You have too many exercises in Training"
+              message: 'You have too many exercises in Training'
             }
           })
         }
@@ -160,7 +160,7 @@ class TrainingController {
             return response.status(HTTPStatus.BAD_REQUEST).json({
               success: false,
               errors: {
-                message: "You have too many rounds in exercises"
+                message: 'You have too many rounds in exercises'
               }
             })
           }
@@ -262,7 +262,7 @@ class TrainingController {
         return response.status(HTTPStatus.BAD_REQUEST).json({
           success: false,
           errors: {
-            message: validation.messages()
+            message: 'Validation error.'
           }
         })
       }
@@ -282,7 +282,7 @@ class TrainingController {
         return response.status(HTTPStatus.BAD_REQUEST).json({
           success: false,
           errors: {
-            message: "You have too many subtrainings in Training"
+            message: 'You have too many subtrainings in Training'
           }
         })
       }
@@ -292,7 +292,7 @@ class TrainingController {
           return response.status(HTTPStatus.BAD_REQUEST).json({
             success: false,
             errors: {
-              message: "You have too many exercises in Training"
+              message: 'You have too many exercises in Training'
             }
           })
         }
@@ -301,7 +301,7 @@ class TrainingController {
             return response.status(HTTPStatus.BAD_REQUEST).json({
               success: false,
               errors: {
-                message: "You have too many rounds in exercises"
+                message: 'You have too many rounds in exercises'
               }
             })
           }
@@ -395,9 +395,9 @@ class TrainingController {
           await training.save()
           return response.status(HTTPStatus.OK).json(training)
         }
-        return response.status(HTTPStatus.UNAUTHORIZED).json({ message: "You have no permissions to manage this Training." })
+        return response.status(HTTPStatus.UNAUTHORIZED).json({ message: 'You have no permissions to manage this Training.' })
       }
-      return response.status(HTTPStatus.NOT_FOUND).json({ message: "Not found." })
+      return response.status(HTTPStatus.NOT_FOUND).json({ message: 'Not found.' })
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
@@ -416,9 +416,9 @@ class TrainingController {
           await TrainingQuery.remove(training)
           return response.status(HTTPStatus.OK).json(training)
         }
-        return response.status(HTTPStatus.UNAUTHORIZED).json({ message: "You have no permissions to manage this Training." })
+        return response.status(HTTPStatus.UNAUTHORIZED).json({ message: 'You have no permissions to manage this Training.' })
       }
-      return response.status(HTTPStatus.NOT_FOUND).json({ message: "Not found." })
+      return response.status(HTTPStatus.NOT_FOUND).json({ message: 'Not found.' })
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
@@ -511,9 +511,9 @@ class TrainingController {
             return response.status(HTTPStatus.OK).json(trainingToFind)
           }
         }
-        return response.status(HTTPStatus.UNAUTHORIZED).json({ message: "You have no permissions." })
+        return response.status(HTTPStatus.UNAUTHORIZED).json({ message: 'You have no permissions.' })
       }
-      return response.status(HTTPStatus.NOT_FOUND).json({ message: "Not found." })
+      return response.status(HTTPStatus.NOT_FOUND).json({ message: 'Not found.' })
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',

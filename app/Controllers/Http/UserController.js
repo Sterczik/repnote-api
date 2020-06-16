@@ -65,7 +65,6 @@ class UserController {
     try {
       const inputData = request.only(['name', 'email', 'password'])
       const userExists = await User.findBy('email', inputData.email)
-
       if (userExists) {
         return response.status(HTTPStatus.BAD_REQUEST)
           .json({
@@ -96,7 +95,7 @@ class UserController {
         return response.status(HTTPStatus.BAD_REQUEST).json({
           success: false,
           errors: {
-            message: validation.messages()
+            message: 'Validation error.'
           }
         })
       }
@@ -118,7 +117,7 @@ class UserController {
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
-        message: 'Problem occured while trying to signup. Please try again.',
+        message: 'Something went wrong',
         err
       })
     }
@@ -137,33 +136,29 @@ class UserController {
         return response.status(HTTPStatus.BAD_REQUEST).json({
           success: false,
           errors: {
-            message: validation.messages()
+            message: 'Validation error.'
           }
         })
       }
 
-      const userExists = await User.findBy('email', data.email)
-
-      if (!userExists) {
+      const accountError = () => {
         return response.status(HTTPStatus.BAD_REQUEST)
           .json({
             success: false,
             errors: {
-              message: 'There is no account with this email.'
+              message: 'Invalid password or account does not exist'
             }
           })
       }
 
-      const passwordCheck = await Hash.verify(data.password, userExists.password)
+      const userExists = await User.findBy('email', data.email)
+      if (!userExists) {
+        return accountError()
+      }
 
+      const passwordCheck = await Hash.verify(data.password, userExists.password)
       if (!passwordCheck) {
-        return response.status(HTTPStatus.BAD_REQUEST)
-          .json({
-            success: false,
-            errors: {
-              message: 'Invalid password'
-            }
-          })
+        return accountError()
       }
 
       const token = await auth
@@ -178,7 +173,7 @@ class UserController {
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
-        message: 'Problem occured while trying to sigin. Please try again.'
+        message: 'Something went wrong'
       })
     }
   }
@@ -205,7 +200,7 @@ class UserController {
         return response.status(HTTPStatus.BAD_REQUEST).json({
           success: false,
           errors: {
-            message: validation.messages()
+            message: 'Validation error.'
           }
         })
       }
@@ -246,7 +241,7 @@ class UserController {
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
-        message: 'Problem occured while trying to change password.'
+        message: 'Something went wrong'
       })
     }
   }
@@ -266,7 +261,7 @@ class UserController {
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
-        message: 'Problem occured while trying to signout. Please try again.'
+        message: 'Something went wrong'
       })
     }
   }
@@ -286,7 +281,7 @@ class UserController {
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
-        message: 'Problem occured. Please try again.'
+        message: 'Something went wrong'
       })
     }
   }

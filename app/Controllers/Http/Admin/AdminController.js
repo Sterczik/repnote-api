@@ -22,33 +22,29 @@ class AdminController {
         return response.status(HTTPStatus.BAD_REQUEST).json({
           success: false,
           errors: {
-            message: validation.messages()
+            message: 'Validation error.'
           }
         })
       }
 
-      const adminExists = await Admin.findBy('email', data.email)
-
-      if (!adminExists) {
+      const accountError = () => {
         return response.status(HTTPStatus.BAD_REQUEST)
           .json({
             success: false,
             errors: {
-              message: 'There is no account with this email.'
+              message: 'Invalid password or account does not exist'
             }
           })
       }
 
-      const passwordCheck = await Hash.verify(data.password, adminExists.password)
+      const adminExists = await Admin.findBy('email', data.email)
+      if (!adminExists) {
+        return accountError()
+      }
 
+      const passwordCheck = await Hash.verify(data.password, adminExists.password)
       if (!passwordCheck) {
-        return response.status(HTTPStatus.BAD_REQUEST)
-          .json({
-            success: false,
-            errors: {
-              message: 'Invalid password'
-            }
-          })
+        return accountError()
       }
 
       const token = await auth
@@ -63,8 +59,10 @@ class AdminController {
         })
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
-        status: 'error',
-        message: 'Problem occured while trying to sigin. Please try again.'
+        success: false,
+        errors: {
+          message: 'Something went wrong'
+        }
       })
     }
   }
@@ -84,7 +82,7 @@ class AdminController {
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
-        message: 'Problem occured while trying to logout. Please try again.'
+        message: 'Something went wrong'
       })
     }
   }
@@ -105,7 +103,7 @@ class AdminController {
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
-        message: 'Problem occured. Please try again.'
+        message: 'Something went wrong'
       })
     }
   }
@@ -174,7 +172,7 @@ class AdminController {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         success: false,
         errors: {
-          message: 'Problem occured while trying to change password.'
+          message: 'Something went wrong'
         }
       })
     }

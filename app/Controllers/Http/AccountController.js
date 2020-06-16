@@ -18,7 +18,7 @@ class AccountController {
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
-        message: 'Something went wrong!'
+        message: 'Something went wrong'
       })
     }
   }
@@ -34,7 +34,7 @@ class AccountController {
         return response.status(HTTPStatus.BAD_REQUEST).json({
           success: false,
           errors: {
-            message: validation.messages()
+            message: 'Validation error.'
           }
         })
       }
@@ -50,7 +50,7 @@ class AccountController {
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
-        message: 'Something went wrong!'
+        message: 'Something went wrong'
       })
     }
   }
@@ -70,7 +70,7 @@ class AccountController {
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
-        message: 'Something went wrong!',
+        message: 'Something went wrong',
         err
       })
     }
@@ -87,7 +87,7 @@ class AccountController {
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
-        message: 'Something went wrong!',
+        message: 'Something went wrong',
         err
       })
     }
@@ -121,7 +121,7 @@ class AccountController {
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
-        message: 'Something went wrong!'
+        message: 'Something went wrong'
       })
     }
   }
@@ -139,7 +139,7 @@ class AccountController {
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
-        message: 'Something went wrong!'
+        message: 'Something went wrong'
       })
     }
   }
@@ -157,7 +157,7 @@ class AccountController {
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
-        message: 'Something went wrong!'
+        message: 'Something went wrong'
       })
     }
   }

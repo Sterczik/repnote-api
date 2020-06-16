@@ -48,7 +48,7 @@ class TrainingAdvancementLevelController {
         return response.status(HTTPStatus.BAD_REQUEST).json({
           success: false,
           errors: {
-            message: validation.messages()
+            message: 'Validation error.'
           }
         })
       }

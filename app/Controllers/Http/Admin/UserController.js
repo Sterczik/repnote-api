@@ -17,7 +17,7 @@ class UserController {
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
-        message: 'Something went wrong!'
+        message: 'Something went wrong'
       })
     }
   }
