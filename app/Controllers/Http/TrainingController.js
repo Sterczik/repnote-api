@@ -63,7 +63,7 @@ class TrainingController {
           user = await auth.getUser()
           like = await TrainingLikeQuery.get(user.id, training.id)
         }
-      } catch(e) {}
+      } catch(err) {}
 
       if (training) {
         if (training.private === false) {

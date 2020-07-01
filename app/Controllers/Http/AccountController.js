@@ -110,7 +110,7 @@ class AccountController {
             .first()
         } else {
         }
-      } catch(e) {}
+      } catch(err) {}
 
       if (user) {
         user.followed = Boolean(follow)
