@@ -433,85 +433,79 @@ class TrainingController {
       const user = await auth.getUser()
       const trainingToClone = await TrainingQuery.getOne(request.params.id)
 
-      if (trainingToClone) {
-        if (trainingToClone['user_id'] != user.id) {
-          const trainingToCloneJSON = await trainingToClone.toJSON()
+      if (trainingToClone && user) {
+        const trainingToCloneJSON = await trainingToClone.toJSON()
 
-          const category = await TrainingCategoryQuery.getOne(trainingToCloneJSON.category.id)
-          const advancementLevel = await TrainingAdvancementLevelQuery.getOne(trainingToCloneJSON.advancementLevel.id)
+        const category = await TrainingCategoryQuery.getOne(trainingToCloneJSON.category.id)
+        const advancementLevel = await TrainingAdvancementLevelQuery.getOne(trainingToCloneJSON.advancementLevel.id)
 
-          const clonedTraining = await TrainingQuery
-            .create({
-              name: trainingToCloneJSON.name,
-              private: true,
-              description: trainingToCloneJSON.description,
-              goal: trainingToCloneJSON.goal,
-              days_per_week: trainingToCloneJSON.days_per_week
-            })
-
-          await clonedTraining
-            .category()
-            .associate(category)
-
-          await clonedTraining
-            .advancementLevel()
-            .associate(advancementLevel)
-
-          await clonedTraining
-            .user()
-            .associate(user)
-
-          trainingToCloneJSON.subtrainings.forEach(async (subtraining) => {
-            const subtrainingContainer = await Subtraining.create({
-              name: subtraining.name
-            })
-
-            await subtrainingContainer
-              .training()
-              .associate(clonedTraining)
-
-            subtraining.exercises.forEach(async (exercise) => {
-              const exerciseContainer = await Exercise.create({
-                name: exercise.name
-              })
-
-              const exerciseCategory = await ExerciseCategory
-                .query()
-                .where('id', exercise.category_id)
-                .first()
-
-              await exerciseContainer
-                .category()
-                .associate(exerciseCategory)
-
-              await exerciseContainer
-                .subtraining()
-                .associate(subtrainingContainer)
-
-              const mappedRounds = exercise.rounds.map((round) => {
-                return {
-                  reps: round.reps,
-                  weight: round.weight
-                }
-              })
-
-              await exerciseContainer
-                .rounds()
-                .createMany(mappedRounds)
-            })
+        const clonedTraining = await TrainingQuery
+          .create({
+            name: trainingToCloneJSON.name,
+            private: true,
+            description: trainingToCloneJSON.description,
+            goal: trainingToCloneJSON.goal,
+            days_per_week: trainingToCloneJSON.days_per_week
           })
 
-          await clonedTraining.save()
+        await clonedTraining
+          .category()
+          .associate(category)
 
-          // Training is saved, now it's time to retrieve it from database with all information
+        await clonedTraining
+          .advancementLevel()
+          .associate(advancementLevel)
 
-          const trainingToFind = await TrainingQuery.getOne(clonedTraining.id)
+        await clonedTraining
+          .user()
+          .associate(user)
 
-          if (trainingToFind) {
-            return response.status(HTTPStatus.OK).json(trainingToFind)
-          }
+        trainingToCloneJSON.subtrainings.forEach(async (subtraining) => {
+          const subtrainingContainer = await Subtraining.create({
+            name: subtraining.name
+          })
+
+          await subtrainingContainer
+            .training()
+            .associate(clonedTraining)
+
+          subtraining.exercises.forEach(async (exercise) => {
+            const exerciseContainer = await Exercise.create({
+              name: exercise.name
+            })
+
+            const exerciseCategory = await ExerciseCategory
+              .query()
+              .where('id', exercise.category_id)
+              .first()
+
+            await exerciseContainer
+              .category()
+              .associate(exerciseCategory)
+
+            await exerciseContainer
+              .subtraining()
+              .associate(subtrainingContainer)
+
+            const mappedRounds = exercise.rounds.map((round) => {
+              return {
+                reps: round.reps,
+                weight: round.weight
+              }
+            })
+
+            await exerciseContainer
+              .rounds()
+              .createMany(mappedRounds)
+          })
+        })
+
+        await clonedTraining.save()
+
+        const trainingToFind = await TrainingQuery.getOne(clonedTraining.id)
+        if (trainingToFind) {
+          return response.status(HTTPStatus.OK).json(clonedTraining)
         }
-        return response.status(HTTPStatus.UNAUTHORIZED).json({ message: 'You have no permissions.' })
       }
       return response.status(HTTPStatus.NOT_FOUND).json({ message: 'Not found.' })
     } catch(err) {
