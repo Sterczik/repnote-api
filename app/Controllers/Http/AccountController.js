@@ -27,7 +27,7 @@ class AccountController {
     try {
       const loggedUser = await auth.getUser()
       const validation = await validate(request.only(['name']), {
-        name: 'required|min:5|max:60'
+        name: 'required|min:6|max:30'
       })
 
       if (validation.fails()) {

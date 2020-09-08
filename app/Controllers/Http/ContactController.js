@@ -28,7 +28,7 @@ class ContactController {
 
       return response.status(HTTPStatus.CREATED).json({
         status: 'success',
-        message: 'Message has sent successfully!'
+        message: 'Message has been sent successfully!'
       })
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
