@@ -129,6 +129,14 @@ class AccountController {
   async follow({ request, response, auth }) {
     try {
       const loggedUser = await auth.getUser()
+
+      if (String(loggedUser.id) === request.params.id) {
+        return response.status(HTTPStatus.BAD_REQUEST).json({
+          status: 'error',
+          message: 'You can not follow yourself'
+        })
+      }
+
       await AccountQuery.followUser(loggedUser, request.params.id)
 
       return response.status(HTTPStatus.OK)
