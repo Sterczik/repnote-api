@@ -27,13 +27,11 @@ class ContactController {
       await ContactQuery.create(inputData)
 
       return response.status(HTTPStatus.CREATED).json({
-        status: 'success',
-        message: 'Message has been sent successfully!'
+        status: 'success'
       })
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
-        status: 'error',
-        message: 'Something went wrong'
+        status: 'error'
       })
     }
   }
