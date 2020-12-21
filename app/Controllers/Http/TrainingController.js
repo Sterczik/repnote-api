@@ -386,14 +386,16 @@ class TrainingController {
   async switchStatus({ request, response, auth }) {
     try {
       const user = await auth.getUser()
-      const training = await TrainingQuery.toggleStatus(request.params.id)
+      const training = await TrainingQuery.getOne(request.params.id)
 
       if (training) {
         if (training['user_id'] == user.id) {
           training.private = !training.private
 
           await training.save()
-          return response.status(HTTPStatus.OK).json(training)
+          return response.status(HTTPStatus.OK).json({
+            private: training.private
+          })
         }
         return response.status(HTTPStatus.UNAUTHORIZED).json({ message: 'You have no permissions to manage this Training.' })
       }

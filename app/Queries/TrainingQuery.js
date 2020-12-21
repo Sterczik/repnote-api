@@ -49,26 +49,16 @@ const TrainingQuery = {
       .with('user')
       .with('category')
       .with('advancementLevel')
-      .with('subtrainings')
-      .with('subtrainings.exercises')
       .with('subtrainings.exercises.category')
-      .with('subtrainings.exercises.rounds')
-      .with('likes')
-      .where('id', id)
-      .first()
-
-    return training
-  },
-  async toggleStatus(id) {
-    const training = await Training
-      .query()
-      .with('user')
-      .with('category')
-      .with('advancementLevel')
-      .with('subtrainings')
-      .with('subtrainings.exercises')
-      .with('subtrainings.exercises.category')
-      .with('subtrainings.exercises.rounds')
+      .with('subtrainings.exercises.rounds', builder => {
+        builder.orderBy('rounds.id', 'ASC')
+      })
+      .with('subtrainings.exercises', builder => {
+        builder.orderBy('exercises.id', 'ASC')
+      })
+      .with('subtrainings', builder => {
+        builder.orderBy('subtrainings.id', 'ASC')
+      })
       .with('likes')
       .where('id', id)
       .first()

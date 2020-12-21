@@ -70,7 +70,6 @@ class UserController {
           .json({
             success: false,
             errors: {
-              type: 'email',
               message: 'This email already exists'
             }
           })
@@ -117,8 +116,7 @@ class UserController {
     } catch(err) {
       return response.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: 'error',
-        message: 'Something went wrong',
-        err
+        message: 'Something went wrong'
       })
     }
   }
